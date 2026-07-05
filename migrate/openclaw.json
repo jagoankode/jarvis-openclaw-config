@@ -76,7 +76,7 @@
         "enabled": true
       },
       "whatsapp": {
-        "enabled": true
+        "enabled": false
       },
       "memory-core": {
         "config": {}
@@ -210,7 +210,7 @@
   "channels": {
     "telegram": {
       "enabled": false,
-      "botToken": "8797445243:AAEPKY48B1Ue-3fttdF48EuOan_hrYM7o2A",
+      "botToken": "",
       "dmPolicy": "pairing",
       "groups": {
         "*": {
