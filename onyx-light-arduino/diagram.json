@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "author": "ONYX Light",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": -421.8, "left": -269.4, "attrs": {} },
+    {
+      "type": "wokwi-led-ring",
+      "id": "ring1",
+      "top": 67.84,
+      "left": -507.61,
+      "attrs": { "pixels": "16" }
+    },
+    {
+      "type": "wokwi-led-ring",
+      "id": "ring2",
+      "top": 67.84,
+      "left": -344.41,
+      "attrs": { "pixels": "16" }
+    },
+    {
+      "type": "wokwi-led-strip",
+      "id": "strip1",
+      "top": -17.9,
+      "left": -541.4,
+      "rotate": 180,
+      "attrs": { "pixels": "17" }
+    },
+    {
+      "type": "wokwi-led-strip",
+      "id": "strip2",
+      "top": 20.5,
+      "left": -541.4,
+      "rotate": 180,
+      "attrs": { "pixels": "17" }
+    },
+    {
+      "type": "wokwi-led-strip",
+      "id": "strip3",
+      "top": -27.5,
+      "left": 447.4,
+      "rotate": 180,
+      "attrs": { "pixels": "17" }
+    },
+    {
+      "type": "wokwi-led-strip",
+      "id": "strip4",
+      "top": 20.5,
+      "left": 447.4,
+      "rotate": 180,
+      "attrs": { "pixels": "17" }
+    },
+    {
+      "type": "wokwi-led-ring",
+      "id": "ring3",
+      "top": 96.64,
+      "left": 577.19,
+      "attrs": { "pixels": "16" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnL",
+      "top": -80,
+      "left": -500,
+      "attrs": { "label": "Sein Kiri" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnR",
+      "top": -80,
+      "left": 500,
+      "attrs": { "label": "Sein Kanan" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnBrake",
+      "top": 200,
+      "left": 300,
+      "attrs": { "label": "Rem" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnTail",
+      "top": 200,
+      "left": 450,
+      "attrs": { "label": "Tail" }
+    }
+  ],
+  "connections": [
+    ["strip1:DIN", "uno:6",  "green",   ["h0"]],
+    ["strip2:DIN", "uno:5",  "green",   ["h0"]],
+    ["strip3:DIN", "uno:9",  "green",   ["h0"]],
+    ["strip4:DIN", "uno:10", "green",   ["h0"]],
+    ["ring1:DIN",  "uno:3",  "blue",    ["h0"]],
+    ["ring2:DIN",  "uno:4",  "blue",    ["h0"]],
+    ["ring3:DIN",  "uno:11", "blue",    ["h0"]],
+    ["strip1:GND", "uno:GND", "black",  ["h0"]],
+    ["strip2:GND", "uno:GND", "black",  ["h0"]],
+    ["strip3:GND", "uno:GND", "black",  ["h0"]],
+    ["strip4:GND", "uno:GND", "black",  ["h0"]],
+    ["ring1:GND",  "uno:GND", "black",  ["h0"]],
+    ["ring2:GND",  "uno:GND", "black",  ["h0"]],
+    ["ring3:GND",  "uno:GND", "black",  ["h0"]],
+    ["strip1:VCC", "uno:5V", "red",     ["h0"]],
+    ["strip2:VCC", "uno:5V", "red",     ["h0"]],
+    ["strip3:VCC", "uno:5V", "red",     ["h0"]],
+    ["strip4:VCC", "uno:5V", "red",     ["h0"]],
+    ["ring1:VCC",  "uno:5V", "red",     ["h0"]],
+    ["ring2:VCC",  "uno:5V", "red",     ["h0"]],
+    ["ring3:VCC",  "uno:5V", "red",     ["h0"]],
+    ["btnL:1.L",   "uno:A0", "orange",  ["h0"]],
+    ["btnL:2.L",   "uno:GND","black",   ["h0"]],
+    ["btnR:1.L",   "uno:A1", "orange",  ["h0"]],
+    ["btnR:2.L",   "uno:GND","black",   ["h0"]],
+    ["btnBrake:1.L", "uno:A2", "red",   ["h0"]],
+    ["btnBrake:2.L", "uno:GND","black", ["h0"]],
+    ["btnTail:1.L",  "uno:A3", "yellow",["h0"]],
+    ["btnTail:2.L",  "uno:GND","black", ["h0"]]
+  ],
+  "dependencies": {}
+}

@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "author": "Trikora Indonesia - Jimmy Neutron",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-led-ring",
+      "id": "ring1",
+      "top": -100,
+      "left": -60,
+      "attrs": { "pixels": "12" }
+    },
+    {
+      "type": "wokwi-led-ring",
+      "id": "ring2",
+      "top": -40,
+      "left": -60,
+      "attrs": { "pixels": "12" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnKiri",
+      "top": -120,
+      "left": 180,
+      "attrs": { "label": "Sein Kiri" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnKanan",
+      "top": -60,
+      "left": 180,
+      "attrs": { "label": "Sein Kanan" }
+    }
+  ],
+  "connections": [
+    ["uno:5V",  "ring1:VCC", "red"],
+    ["uno:GND", "ring1:GND", "black"],
+    ["uno:6",   "ring1:DIN", "green"],
+    ["uno:5V",  "ring2:VCC", "red"],
+    ["uno:GND", "ring2:GND", "black"],
+    ["uno:5",   "ring2:DIN", "green"],
+    ["uno:2",   "btnKiri:1",  "orange"],
+    ["uno:GND", "btnKiri:2",  "black"],
+    ["uno:3",   "btnKanan:1", "blue"],
+    ["uno:GND", "btnKanan:2", "black"]
+  ],
+  "dependencies": {}
+}

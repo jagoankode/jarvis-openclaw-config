@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wiring Diagram — Microcontroller Vehicle Light Mod</title>
+<style>
+  body { background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: system-ui, -apple-system, sans-serif; }
+  svg { background: #16213e; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  text { font-family: 'Courier New', monospace; }
+</style>
+</head>
+<body>
+<svg width="900" height="650" viewBox="0 0 900 650">
+  <!-- Connectors (drawn first so they sit behind boxes) -->
+  <!-- Battery 12V to Step-Down -->
+  <path d="M 80 180 L 80 250 L 200 250 L 200 320" stroke="#e74c3c" stroke-width="3" fill="none" marker-end="url(#arrowRed)"/>
+  <path d="M 80 220 L 80 650" stroke="#333" stroke-width="3" fill="none"/>
+
+  <!-- Step-Down 5V to ESP32 -->
+  <path d="M 280 380 L 280 400 L 400 400 L 400 420" stroke="#2ecc71" stroke-width="3" fill="none" marker-end="url(#arrowGreen)"/>
+  <path d="M 280 650 L 400 650" stroke="#333" stroke-width="3" fill="none"/>
+
+  <!-- Input lines to ESP32 -->
+  <path d="M 80 350 L 80 380 L 130 380" stroke="#ff9800" stroke-width="2" fill="none" marker-end="url(#arrowOrange)"/>
+  <text x="90" y="370" fill="#ff9800" font-size="10">L</text>
+  <path d="M 80 390 L 80 420 L 130 420" stroke="#ff9800" stroke-width="2" fill="none" marker-end="url(#arrowOrange)"/>
+  <text x="90" y="410" fill="#ff9800" font-size="10">R</text>
+  <path d="M 80 430 L 80 460 L 130 460" stroke="#e74c3c" stroke-width="2" fill="none" marker-end="url(#arrowRed)"/>
+  <text x="90" y="450" fill="#e74c3c" font-size="10">B</text>
+  <path d="M 80 470 L 80 500 L 130 500" stroke="#00bcd4" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+  <text x="90" y="490" fill="#00bcd4" font-size="10">T</text>
+
+  <!-- ESP32 output to LEDs -->
+  <path d="M 530 440 L 620 440 L 620 310 L 670 310" stroke="#e91e63" stroke-width="3" fill="none" marker-end="url(#arrowPink)"/>
+  <text x="540" y="435" fill="#e91e63" font-size="10">DATA</text>
+  <path d="M 530 460 L 560 460" stroke="#9c27b0" stroke-width="2" fill="none" marker-end="url(#arrowPurple)"/>
+  <text x="540" y="455" fill="#9c27b0" font-size="10">BT</text>
+
+  <!-- MOS FET line -->
+  <path d="M 530 480 L 680 530" stroke="#ff5722" stroke-width="2" fill="none" marker-end="url(#arrowOrange)"/>
+
+  <!-- Ground lines -->
+  <path d="M 200 450 L 200 650" stroke="#333" stroke-width="2" fill="none"/>
+  <path d="M 400 500 L 400 650" stroke="#333" stroke-width="2" fill="none"/>
+  <path d="M 560 650 L 560 540" stroke="#333" stroke-width="2" fill="none"/>
+  <path d="M 680 650 L 680 560" stroke="#333" stroke-width="2" fill="none"/>
+
+  <!-- Ground bar -->
+  <path d="M 70 620 L 830 620" stroke="#555" stroke-width="3" fill="none"/>
+  <text x="20" y="625" fill="#555" font-size="12" font-weight="bold">GND</text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#e74c3c"/></marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#2ecc71"/></marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#ff9800"/></marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#00bcd4"/></marker>
+    <marker id="arrowPink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#e91e63"/></marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#9c27b0"/></marker>
+  </defs>
+
+  <!-- BOX: Battery 12V -->
+  <rect x="40" y="140" width="80" height="80" rx="12" fill="#c0392b" stroke="#e74c3c" stroke-width="2"/>
+  <text x="80" y="180" text-anchor="middle" fill="white" font-size="13" font-weight="bold">🔋 Accu</text>
+  <text x="80" y="196" text-anchor="middle" fill="#ffcdd2" font-size="11">12V</text>
+
+  <!-- BOX: Step-Down LM2596 -->
+  <rect x="150" y="320" width="100" height="60" rx="10" fill="#1b5e20" stroke="#2ecc71" stroke-width="2"/>
+  <text x="200" y="350" text-anchor="middle" fill="#a5d6a7" font-size="11">Step-Down</text>
+  <text x="200" y="366" text-anchor="middle" fill="#a5d6a7" font-size="11">12V → 5V</text>
+
+  <!-- BOX: Input Signals from Vehicle -->
+  <rect x="40" y="340" width="80" height="180" rx="10" fill="#4a148c" stroke="#9c27b0" stroke-width="2"/>
+  <text x="80" y="370" text-anchor="middle" fill="#ce93d8" font-size="10" font-weight="bold">Input</text>
+  <text x="80" y="388" text-anchor="middle" fill="#fff" font-size="10">Signal</text>
+  <text x="80" y="408" text-anchor="middle" fill="#ff9800" font-size="10">L = Kiri</text>
+  <text x="80" y="424" text-anchor="middle" fill="#ff9800" font-size="10">R = Kanan</text>
+  <text x="80" y="440" text-anchor="middle" fill="#e74c3c" font-size="10">B = Brake</text>
+  <text x="80" y="456" text-anchor="middle" fill="#00bcd4" font-size="10">T = Tail</text>
+  <text x="80" y="472" text-anchor="middle" fill="#888" font-size="9">(from vehicle)</text>
+
+  <!-- BOX: ESP32 / Arduino -->
+  <rect x="130" y="420" width="140" height="100" rx="12" fill="#0d47a1" stroke="#1976d2" stroke-width="2"/>
+  <text x="200" y="448" text-anchor="middle" fill="#90caf9" font-size="12" font-weight="bold">🧠 ESP32 / Arduino</text>
+  <text x="200" y="466" text-anchor="middle" fill="#90caf9" font-size="10">GPIO Inputs</text>
+  <text x="200" y="484" text-anchor="middle" fill="#90caf9" font-size="10">PWM Outputs</text>
+  <text x="200" y="502" text-anchor="middle" fill="#90caf9" font-size="10">Firmware Control</text>
+
+  <!-- BOX: WS2812B LED Strip Left -->
+  <rect x="670" y="280" width="160" height="60" rx="10" fill="#880e4f" stroke="#e91e63" stroke-width="2"/>
+  <text x="750" y="308" text-anchor="middle" fill="#f48fb1" font-size="11">💡 LED Strip Kiri</text>
+  <text x="750" y="324" text-anchor="middle" fill="#f48fb1" font-size="10">WS2812B Addressable</text>
+
+  <!-- BOX: WS2812B LED Strip Right -->
+  <rect x="670" y="360" width="160" height="60" rx="10" fill="#880e4f" stroke="#e91e63" stroke-width="2"/>
+  <text x="750" y="388" text-anchor="middle" fill="#f48fb1" font-size="11">💡 LED Strip Kanan</text>
+  <text x="750" y="404" text-anchor="middle" fill="#f48fb1" font-size="10">WS2812B Addressable</text>
+
+  <!-- BOX: High Power LED (via MOSFET) -->
+  <rect x="680" y="500" width="140" height="60" rx="10" fill="#bf360c" stroke="#ff5722" stroke-width="2"/>
+  <text x="750" y="528" text-anchor="middle" fill="#ffccbc" font-size="11">🔦 High-Power LED</text>
+  <text x="750" y="544" text-anchor="middle" fill="#ffccbc" font-size="10">(MOSFET driven)</text>
+
+  <!-- BOX: Bluetooth Module -->
+  <rect x="420" y="490" width="140" height="50" rx="10" fill="#4a148c" stroke="#9c27b0" stroke-width="2"/>
+  <text x="490" y="515" text-anchor="middle" fill="#ce93d8" font-size="11">📱 Bluetooth HC-05</text>
+  <text x="490" y="531" text-anchor="middle" fill="#ce93d8" font-size="10">/ ESP32 Built-in</text>
+
+  <!-- BOX: Ground Bar Label -->
+  <rect x="60" y="608" width="770" height="4" rx="2" fill="#555"/>
+
+  <!-- Title -->
+  <text x="450" y="40" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold">🧪 Wiring Diagram — Smart Vehicle Lighting Controller</text>
+  <text x="450" y="60" text-anchor="middle" fill="#888" font-size="12">Microcontroller-Based Sequential Turn Signal + DRL + Brake</text>
+
+  <!-- Legend -->
+  <rect x="30" y="460" width="12" height="4" rx="2" fill="#e74c3c"/><text x="48" y="465" fill="#888" font-size="9">12V Power</text>
+  <rect x="30" y="478" width="12" height="4" rx="2" fill="#2ecc71"/><text x="48" y="483" fill="#888" font-size="9">5V Regulated</text>
+  <rect x="30" y="496" width="12" height="4" rx="2" fill="#333"/><text x="48" y="501" fill="#888" font-size="9">Ground</text>
+</svg>
+</body>
+</html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ONYX Light — Simulasi Lampu Motor Depan & Belakang</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0f; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; font-family: system-ui, sans-serif; overflow-x: hidden; }
+
+h1 { color: #00F0FF; font-size: 14px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 6px; }
+.sub { color: #555; font-size: 12px; margin-bottom: 24px; }
+
+.container { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; }
+
+/* ======== MOTOR CARD ======== */
+.motor-card { background: #111; border: 1px solid #1A1A2E; border-radius: 20px; padding: 20px; width: 420px; }
+.motor-card h2 { color: #00F0FF; font-size: 11px; letter-spacing: 2px; margin-bottom: 12px; text-align: center; }
+
+.motor-svg { width: 100%; height: 280px; position: relative; display: flex; justify-content: center; align-items: center; }
+
+/* Controls */
+.controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 16px 0 10px; }
+.btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #1A1A2E; background: #0D0D0D; color: #888; font-size: 11px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
+.btn:hover { border-color: #333; color: #E8E8E8; }
+.btn.active { border-color: #00F0FF; color: #00F0FF; box-shadow: 0 0 10px rgba(0,240,255,0.15); }
+.btn.active-l { border-color: #FF6B00; color: #FF6B00; box-shadow: 0 0 10px rgba(255,107,0,0.15); }
+.btn.active-r { border-color: #FF6B00; color: #FF6B00; box-shadow: 0 0 10px rgba(255,107,0,0.15); }
+.btn.active-brake { border-color: #FF0000; color: #FF0000; box-shadow: 0 0 10px rgba(255,0,0,0.2); }
+.btn.active-tail { border-color: #880000; color: #ff4444; box-shadow: 0 0 5px rgba(255,0,0,0.1); }
+.btn-label { font-size: 9px; color: #555; display: block; }
+
+/* Status */
+.status { color: #444; font-size: 10px; font-family: 'Courier New', monospace; text-align: center; margin-top: 8px; }
+.status span { color: #00F0FF; }
+
+.controls-wrapper { display: flex; flex-direction: column; align-items: center; }
+</style>
+</head>
+<body>
+
+<h1>⚡ ONYX LIGHT</h1>
+<div class="sub">Simulasi Lampu Motor — Depan & Belakang</div>
+
+<div class="container">
+
+<!-- ========== MOTOR DEPAN ========== -->
+<div class="motor-card">
+  <h2>🔦 TAMPILAN DEPAN</h2>
+  <div class="motor-svg">
+    <svg viewBox="0 0 400 260" width="380">
+      <!-- Body outline motor depan -->
+      <ellipse cx="200" cy="200" rx="120" ry="40" fill="#1a1a1a" stroke="#222" stroke-width="2"/>
+      <rect x="80" y="160" width="240" height="50" rx="20" fill="#151515" stroke="#222" stroke-width="1.5"/>
+      <!-- Headlight area -->
+      <ellipse cx="200" cy="130" rx="65" ry="45" fill="#0D0D0D" stroke="#222" stroke-width="2"/>
+      <!-- Handlebar -->
+      <path d="M 120 100 L 280 100" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+      <path d="M 120 100 L 90 85" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 280 100 L 310 85" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+
+      <!-- Strip kiri (sequential) -->
+      <defs>
+        <linearGradient id="stripGradL" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0%" stop-color="var(--stripL-color, #FF6B00)" stop-opacity="0"/>
+          <stop offset="100%" stop-color="var(--stripL-color, #FF6B00)" stop-opacity="1"/>
+        </linearGradient>
+      </defs>
+
+      <!-- LEFT TURN STRIP -->
+      <rect id="stripL" x="135" y="148" width="60" height="8" rx="4" fill="#FF6B00" opacity="0.15"/>
+      <g id="stripL-segments">
+        <rect x="135" y="148" width="12" height="8" rx="4" class="seg-l seg-l-0" fill="#FF6B00" opacity="0"/>
+        <rect x="149" y="148" width="12" height="8" rx="4" class="seg-l seg-l-1" fill="#FF6B00" opacity="0"/>
+        <rect x="163" y="148" width="12" height="8" rx="4" class="seg-l seg-l-2" fill="#FF6B00" opacity="0"/>
+        <rect x="177" y="148" width="12" height="8" rx="4" class="seg-l seg-l-3" fill="#FF6B00" opacity="0"/>
+      </g>
+
+      <!-- RIGHT TURN STRIP -->
+      <rect id="stripR" x="205" y="148" width="60" height="8" rx="4" fill="#FF6B00" opacity="0.15"/>
+      <g id="stripR-segments">
+        <rect x="205" y="148" width="12" height="8" rx="4" class="seg-r seg-r-0" fill="#FF6B00" opacity="0"/>
+        <rect x="219" y="148" width="12" height="8" rx="4" class="seg-r seg-r-1" fill="#FF6B00" opacity="0"/>
+        <rect x="233" y="148" width="12" height="8" rx="4" class="seg-r seg-r-2" fill="#FF6B00" opacity="0"/>
+        <rect x="247" y="148" width="12" height="8" rx="4" class="seg-r seg-r-3" fill="#FF6B00" opacity="0"/>
+      </g>
+
+      <!-- RING KIRI (DRL) -->
+      <g id="ringL">
+        <circle cx="155" cy="130" r="25" fill="none" stroke="#00F0FF" stroke-width="4" opacity="0.08"/>
+        <circle cx="155" cy="130" r="22" fill="none" stroke="#00F0FF" stroke-width="2" opacity="0.08"/>
+        <circle cx="155" cy="130" r="4" fill="#00F0FF" opacity="0.15"/>
+      </g>
+
+      <!-- RING KANAN (DRL) -->
+      <g id="ringR">
+        <circle cx="245" cy="130" r="25" fill="none" stroke="#00F0FF" stroke-width="4" opacity="0.08"/>
+        <circle cx="245" cy="130" r="22" fill="none" stroke="#00F0FF" stroke-width="2" opacity="0.08"/>
+        <circle cx="245" cy="130" r="4" fill="#00F0FF" opacity="0.15"/>
+      </g>
+
+      <!-- Logo ONYX -->
+      <text x="200" y="230" text-anchor="middle" fill="#333" font-family="'Courier New', monospace" font-size="10" letter-spacing="2">ONYX LIGHT</text>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <button class="btn" onpointerdown="toggleLeft()" id="btnL"><span class="btn-label">⬅</span> SEIN KIRI</button>
+    <button class="btn" onpointerdown="toggleRight()" id="btnR"><span class="btn-label">➡</span> SEIN KANAN</button>
+    <button class="btn" onpointerdown="toggleHazard()" id="btnH"><span class="btn-label">⚠️</span> HAZARD</button>
+    <button class="btn" onpointerdown="toggleBrake()" id="btnB"><span class="btn-label">🛑</span> REM</button>
+  </div>
+</div>
+
+<!-- ========== MOTOR BELAKANG ========== -->
+<div class="motor-card">
+  <h2>🔴 TAMPILAN BELAKANG</h2>
+  <div class="motor-svg">
+    <svg viewBox="0 0 400 260" width="380">
+      <!-- Body outline belakang -->
+      <ellipse cx="200" cy="200" rx="110" ry="35" fill="#1a1a1a" stroke="#222" stroke-width="2"/>
+      <rect x="90" y="165" width="220" height="45" rx="20" fill="#151515" stroke="#222" stroke-width="1.5"/>
+
+      <!-- Lampu belakang kiri (Tail/Brake) -->
+      <g id="tailL">
+        <rect x="130" y="155" width="50" height="25" rx="8" fill="#1a0000" stroke="#220000" stroke-width="2"/>
+        <rect x="138" y="160" width="34" height="15" rx="5" fill="#2a0000" id="tailL-inner"/>
+      </g>
+
+      <!-- Lampu belakang kanan (Tail/Brake) -->
+      <g id="tailR">
+        <rect x="220" y="155" width="50" height="25" rx="8" fill="#1a0000" stroke="#220000" stroke-width="2"/>
+        <rect x="228" y="160" width="34" height="15" rx="5" fill="#2a0000" id="tailR-inner"/>
+      </g>
+
+      <!-- Lampu sein belakang kiri -->
+      <g id="rearSignalL">
+        <rect x="105" y="175" width="20" height="12" rx="4" fill="#1a1000" stroke="#332000" stroke-width="1.5" opacity="0.15"/>
+      </g>
+      <!-- Lampu sein belakang kanan -->
+      <g id="rearSignalR">
+        <rect x="275" y="175" width="20" height="12" rx="4" fill="#1a1000" stroke="#332000" stroke-width="1.5" opacity="0.15"/>
+      </g>
+
+      <!-- Plat nomor area -->
+      <rect x="165" y="195" width="70" height="30" rx="4" fill="#222" stroke="#333" stroke-width="1"/>
+
+      <!-- Logo -->
+      <text x="200" y="235" text-anchor="middle" fill="#333" font-family="'Courier New', monospace" font-size="10" letter-spacing="2">ONYX LIGHT</text>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <button class="btn" onpointerdown="toggleRearLeft()" id="btnRL"><span class="btn-label">⬅</span> SEIN KIRI</button>
+    <button class="btn" onpointerdown="toggleRearRight()" id="btnRR"><span class="btn-label">➡</span> SEIN KANAN</button>
+    <button class="btn" onpointerdown="toggleRearHazard()" id="btnRH"><span class="btn-label">⚠️</span> HAZARD</button>
+    <button class="btn" onpointerdown="toggleBrake()" id="btnBrake"><span class="btn-label">🛑</span> REM</button>
+  </div>
+</div>
+
+</div>
+
+<div class="controls-wrapper">
+  <div style="display:flex; gap:8px; margin-top:16px;">
+    <button class="btn" onpointerdown="toggleMode('drl')" id="modeDrl" style="border-color:#00F0FF;color:#00F0FF;">🌙 DRL</button>
+    <button class="btn" onpointerdown="toggleMode('sound')" id="modeSound">🎵 SOUND REACTIVE</button>
+    <button class="btn" onpointerdown="toggleMode('welcome')" id="modeWelcome">✨ WELCOME</button>
+  </div>
+  <div class="status" id="statusBar">Status: <span id="statusText">DRL Mode</span></div>
+</div>
+
+<script>
+// ========== STATE ==========
+const state = {
+  left: false, right: false, hazard: false,
+  brake: false, tail: false, mode: 'drl',
+  seqStepL: 0, seqStepR: 0, animatingL: false, animatingR: false,
+  breath: 0
+};
+
+const SEG_COUNT = 4;
+const BLINK_INTERVAL = 120; // ms per segment
+
+// ========== DOM REFS ==========
+const segL = document.querySelectorAll('.seg-l');
+const segR = document.querySelectorAll('.seg-r');
+const ringL = document.getElementById('ringL');
+const ringR = document.getElementById('ringR');
+const stripL = document.getElementById('stripL');
+const stripR = document.getElementById('stripR');
+const tailLInner = document.getElementById('tailL-inner');
+const tailRInner = document.getElementById('tailR-inner');
+const rearSignalL = document.getElementById('rearSignalL');
+const rearSignalR = document.getElementById('rearSignalR');
+const statusText = document.getElementById('statusText');
+
+const btnL = document.getElementById('btnL');
+const btnR = document.getElementById('btnR');
+const btnH = document.getElementById('btnH');
+const btnB = document.getElementById('btnB');
+const btnRL = document.getElementById('btnRL');
+const btnRR = document.getElementById('btnRR');
+const btnRH = document.getElementById('btnRH');
+const btnBrake = document.getElementById('btnBrake');
+
+// ========== FRONT SEIN SEQUENTIAL ==========
+function animateSequential(side) {
+  const segs = side === 'left' ? segL : segR;
+  const step = side === 'left' ? state.seqStepL : state.seqStepR;
+  const isRunning = side === 'left' ? (state.left || state.hazard) : (state.right || state.hazard);
+
+  // Reset all
+  segs.forEach(s => { s.style.opacity = '0'; });
+
+  if (!isRunning) return;
+
+  // Lighting up segments sequentially
+  for (let i = 0; i <= step; i++) {
+    if (i < SEG_COUNT) {
+      segs[i].style.opacity = '1';
+    }
+  }
+
+  // Get the parent strip for this side
+  const strip = side === 'left' ? stripL : stripR;
+  strip.style.opacity = step >= 0 ? '1' : '0.15';
+
+  // Animate rear signal
+  if (side === 'left') {
+    rearSignalL.style.fill = '#FF6B00';
+    rearSignalL.style.opacity = '1';
+  } else {
+    rearSignalR.style.fill = '#FF6B00';
+    rearSignalR.style.opacity = '1';
+  }
+
+  // Ring orange indicator
+  if (side === 'left') {
+    ringL.querySelectorAll('circle').forEach(c => {
+      c.style.stroke = '#FF6B00';
+      c.style.opacity = step >= 0 ? '0.4' : '0.08';
+    });
+  } else {
+    ringR.querySelectorAll('circle').forEach(c => {
+      c.style.stroke = '#FF6B00';
+      c.style.opacity = step >= 0 ? '0.4' : '0.08';
+    });
+  }
+}
+
+// ========== MAIN LOOP (Sequential) ==========
+let lastSeqTime = 0;
+
+function seqLoop(time) {
+  if (time - lastSeqTime >= BLINK_INTERVAL) {
+    lastSeqTime = time;
+
+    // Left sequential
+    if (state.left || state.hazard) {
+      state.seqStepL = (state.seqStepL + 1) % (SEG_COUNT + 2);
+      animateSequential('left');
+    } else {
+      state.seqStepL = 0;
+      segL.forEach(s => { s.style.opacity = '0'; });
+      stripL.style.opacity = '0.15';
+      ringL.querySelectorAll('circle').forEach(c => {
+        c.style.stroke = '#00F0FF';
+        c.style.opacity = '0.08';
+      });
+      rearSignalL.style.fill = '#1a1000';
+      rearSignalL.style.opacity = '0.15';
+    }
+
+    // Right sequential
+    if (state.right || state.hazard) {
+      state.seqStepR = (state.seqStepR + 1) % (SEG_COUNT + 2);
+      animateSequential('right');
+    } else {
+      state.seqStepR = 0;
+      segR.forEach(s => { s.style.opacity = '0'; });
+      stripR.style.opacity = '0.15';
+      ringR.querySelectorAll('circle').forEach(c => {
+        c.style.stroke = '#00F0FF';
+        c.style.opacity = '0.08';
+      });
+      rearSignalR.style.fill = '#1a1000';
+      rearSignalR.style.opacity = '0.15';
+    }
+  }
+
+  // ========== DRL / TAIL / BRAKE ==========
+  if (state.brake) {
+    // BRAKE MODE
+    const pulse = 0.6 + 0.4 * Math.sin(time / 100);
+    tailLInner.style.fill = '#ff0000';
+    tailLInner.style.opacity = pulse;
+    tailRInner.style.fill = '#ff0000';
+    tailRInner.style.opacity = pulse;
+    // Front DRL pulsing red
+    ringL.querySelectorAll('circle').forEach(c => {
+      if (!state.left && !state.hazard) {
+        c.style.stroke = '#ff0000';
+        c.style.opacity = 0.3 + 0.3 * Math.sin(time / 80);
+      }
+    });
+    ringR.querySelectorAll('circle').forEach(c => {
+      if (!state.right && !state.hazard) {
+        c.style.stroke = '#ff0000';
+        c.style.opacity = 0.3 + 0.3 * Math.sin(time / 80);
+      }
+    });
+  } else {
+    // NORMAL DRL / TAIL
+    const breath = 0.08 + 0.06 * Math.sin(time / 400);
+    const tailOpacity = state.tail ? 0.8 : 0.25;
+
+    // Rings — DRL breathing
+    if (!state.left && !state.hazard) {
+      ringL.querySelectorAll('circle').forEach(c => {
+        c.style.stroke = '#00F0FF';
+        c.style.opacity = breath;
+      });
+    }
+    if (!state.right && !state.hazard) {
+      ringR.querySelectorAll('circle').forEach(c => {
+        c.style.stroke = '#00F0FF';
+        c.style.opacity = breath;
+      });
+    }
+
+    // Tail lights
+    tailLInner.style.fill = state.tail ? '#ff2200' : '#440000';
+    tailLInner.style.opacity = tailOpacity;
+    tailRInner.style.fill = state.tail ? '#ff2200' : '#440000';
+    tailRInner.style.opacity = tailOpacity;
+  }
+
+  // ========== SOUND REACTIVE MODE ==========
+  if (state.mode === 'sound') {
+    const intensity = 0.15 + 0.15 * Math.sin(time / 150) + 0.1 * Math.sin(time / 73);
+    const hue = (time / 50) % 360;
+    if (!state.left && !state.right && !state.hazard && !state.brake) {
+      ringL.querySelectorAll('circle').forEach(c => {
+        c.style.stroke = `hsl(${hue}, 100%, 60%)`;
+        c.style.opacity = intensity;
+      });
+      ringR.querySelectorAll('circle').forEach(c => {
+        c.style.stroke = `hsl(${hue}, 100%, 60%)`;
+        c.style.opacity = intensity;
+      });
+      stripL.style.opacity = 0.3 + 0.3 * Math.sin(time / 120);
+      stripR.style.opacity = 0.3 + 0.3 * Math.sin(time / 120);
+    }
+  }
+
+  // Status update
+  updateStatus();
+
+  requestAnimationFrame(seqLoop);
+}
+
+// ========== STATUS ==========
+function updateStatus() {
+  if (state.brake) { statusText.textContent = '🛑 BRAKE'; return; }
+  if (state.hazard) { statusText.textContent = '⚠️ HAZARD'; return; }
+  if (state.left) { statusText.textContent = '⬅ SEIN KIRI'; return; }
+  if (state.right) { statusText.textContent = '➡ SEIN KANAN'; return; }
+  if (state.mode === 'sound') { statusText.textContent = '🎵 SOUND REACTIVE'; return; }
+  if (state.mode === 'welcome') { statusText.textContent = '✨ WELCOME ANIMATION'; return; }
+  statusText.textContent = '🌙 DRL MODE';
+}
+
+// ========== WELCOME ANIMATION ==========
+function runWelcome() {
+  state.mode = 'welcome';
+  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active', 'active-l', 'active-r', 'active-brake', 'active-tail'));
+
+  let step = 0;
+  const totalSteps = 40;
+
+  function welcomeStep() {
+    if (step > totalSteps || state.mode !== 'welcome') { state.mode = 'drl'; return; }
+
+    // Sweep strips
+    const p = Math.min(step / 10, 1);
+    segL.forEach((s, i) => { s.style.opacity = i <= step - 1 ? '1' : '0'; });
+    segR.forEach((s, i) => {
+      const j = SEG_COUNT - 1 - i;
+      s.style.opacity = j <= step - 1 ? '1' : '0';
+    });
+
+    // Ring fade in
+    const ringP = Math.min(step / 15, 1);
+    ringL.querySelectorAll('circle').forEach(c => {
+      c.style.stroke = '#00F0FF';
+      c.style.opacity = ringP * 0.4;
+    });
+    ringR.querySelectorAll('circle').forEach(c => {
+      c.style.stroke = '#00F0FF';
+      c.style.opacity = ringP * 0.4;
+    });
+
+    stripL.style.opacity = 0.3 + p * 0.7;
+    stripR.style.opacity = 0.3 + p * 0.7;
+
+    step++;
+    if (step <= totalSteps) setTimeout(welcomeStep, 50);
+    else {
+      // Blink 2x
+      setTimeout(() => {
+        segL.forEach(s => s.style.opacity = '0');
+        segR.forEach(s => s.style.opacity = '0');
+        stripL.style.opacity = '0.15';
+        stripR.style.opacity = '0.15';
+        setTimeout(() => {
+          segL.forEach(s => s.style.opacity = '1');
+          segR.forEach(s => s.style.opacity = '1');
+          stripL.style.opacity = '1';
+          stripR.style.opacity = '1';
+          setTimeout(() => {
+            segL.forEach(s => s.style.opacity = '0');
+            segR.forEach(s => s.style.opacity = '0');
+            stripL.style.opacity = '0.15';
+            stripR.style.opacity = '0.15';
+            state.mode = 'drl';
+          }, 150);
+        }, 150);
+      }, 400);
+    }
+  }
+
+  welcomeStep();
+}
+
+// ========== CONTROLS ==========
+function toggleLeft() {
+  if (state.hazard) toggleHazard();
+  state.left = !state.left;
+  state.right = false;
+  btnL.classList.toggle('active-l', state.left);
+  btnR.classList.remove('active-r');
+  if (state.left) state.seqStepL = -1;
+  if (state.left && btnRL) btnRL.classList.add('active-l');
+  else if (btnRL) btnRL.classList.remove('active-l');
+}
+function toggleRight() {
+  if (state.hazard) toggleHazard();
+  state.right = !state.right;
+  state.left = false;
+  btnR.classList.toggle('active-r', state.right);
+  btnL.classList.remove('active-l');
+  if (state.right) state.seqStepR = -1;
+  if (state.right && btnRR) btnRR.classList.add('active-r');
+  else if (btnRR) btnRR.classList.remove('active-r');
+}
+function toggleHazard() {
+  state.hazard = !state.hazard;
+  state.left = false;
+  state.right = false;
+  btnH.classList.toggle('active', state.hazard);
+  btnL.classList.remove('active-l');
+  btnR.classList.remove('active-r');
+  [btnRL, btnRR].forEach(b => b && b.classList.remove('active-l', 'active-r'));
+  [btnRH].forEach(b => b && b.classList.toggle('active', state.hazard));
+  if (state.hazard) { state.seqStepL = -1; state.seqStepR = -1; }
+}
+function toggleBrake() {
+  state.brake = !state.brake;
+  btnB.classList.toggle('active-brake', state.brake);
+  btnBrake.classList.toggle('active-brake', state.brake);
+}
+function toggleRearLeft() {
+  if (state.hazard) toggleRearHazard();
+  state.left = !state.left;
+  state.right = false;
+  btnRL.classList.toggle('active-l', state.left);
+  btnRR.classList.remove('active-r');
+  btnL.classList.toggle('active-l', state.left);
+  btnR.classList.remove('active-r');
+  if (!state.hazard) btnH.classList.remove('active');
+  if (state.left) state.seqStepL = -1;
+}
+function toggleRearRight() {
+  if (state.hazard) toggleRearHazard();
+  state.right = !state.right;
+  state.left = false;
+  btnRR.classList.toggle('active-r', state.right);
+  btnRL.classList.remove('active-l');
+  btnR.classList.toggle('active-r', state.right);
+  btnL.classList.remove('active-l');
+  if (!state.hazard) btnH.classList.remove('active');
+  if (state.right) state.seqStepR = -1;
+}
+function toggleRearHazard() {
+  state.hazard = !state.hazard;
+  state.left = false;
+  state.right = false;
+  btnRH.classList.toggle('active', state.hazard);
+  btnH.classList.toggle('active', state.hazard);
+  btnL.classList.remove('active-l');
+  btnR.classList.remove('active-r');
+  [btnRL, btnRR].forEach(b => b && b.classList.remove('active-l', 'active-r'));
+  if (state.hazard) { state.seqStepL = -1; state.seqStepR = -1; }
+}
+
+function toggleMode(mode) {
+  if (mode === 'welcome') { runWelcome(); return; }
+  state.mode = mode;
+  document.querySelectorAll('#modeDrl, #modeSound, #modeWelcome').forEach(b => b.classList.remove('active'));
+  document.getElementById(`mode${mode.charAt(0).toUpperCase() + mode.slice(1)}`)?.classList.add('active', mode === 'drl');
+  if (mode === 'drl') {
+    document.getElementById('modeDrl').classList.add('active');
+  }
+  if (mode === 'sound') {
+    document.getElementById('modeSound').classList.add('active');
+  }
+}
+
+// ========== START ==========
+requestAnimationFrame(seqLoop);
+</script>
+</body>
+</html>
