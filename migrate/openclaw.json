@@ -204,12 +204,12 @@
     "lastRunMode": "local"
   },
   "meta": {
-    "lastTouchedVersion": "2026.6.10",
-    "lastTouchedAt": "2026-07-05T03:50:31.051Z"
+    "lastTouchedVersion": "2026.6.11",
+    "lastTouchedAt": "2026-07-05T09:02:37.935Z"
   },
   "channels": {
     "telegram": {
-      "enabled": true,
+      "enabled": false,
       "botToken": "8797445243:AAEPKY48B1Ue-3fttdF48EuOan_hrYM7o2A",
       "dmPolicy": "pairing",
       "groups": {
