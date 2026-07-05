@@ -57,3 +57,8 @@ Add whatever helps you do your job. This is your cheat sheet.
 ## Related
 
 - [Agent workspace](/concepts/agent-workspace)
+
+## SSH Hosts
+
+- `jimmy-vps` → 103.93.161.116, user: jimmy-bot, key: ~/.ssh/jimmy-openclaw.pem
+

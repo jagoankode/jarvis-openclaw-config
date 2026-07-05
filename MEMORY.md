@@ -255,3 +255,22 @@ Setelah **deliver hasil**, langsung:
 1. Jalankan **compact** dulu
 2. **Tanya** Bos Jarvis: ada koreksi atau enggak?
 3. Kalo **gak ada koreksi** → **new session**
+
+## 🚀 2026-07-05 — VPS Migration & Git Backup
+
+### VPS Setup (Jimmy-OpenClaw)
+- **IP:** 103.93.161.116
+- **User:** jimmy-bot
+- **SSH key:** ~/.ssh/jimmy-openclaw.pem
+- **SSH alias:** `jimmy-vps` (via ~/.ssh/config)
+- **OpenClaw:** v2026.6.11
+- **Model:** opencode-go/deepseek-v4-flash (primary)
+- **API key:** sk-cRj…ghoZ (opencode-go)
+- **Gateway:** port 18789, bind LAN
+- **Telegram:** @jimmy_newtron_bot — running via VPS
+
+### Git Backup
+- **Repo:** github.com/jagoankode/jarvis-openclaw-config
+- **Isi:** Semua workspace files + daily notes
+- **Cara restore:** git clone ke ~/.openclaw/workspace di mana aja
+
