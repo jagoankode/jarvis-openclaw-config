@@ -1,0 +1,10 @@
+Host code.ifg-life.id
+  HostName code.ifg-life.id
+  User git
+  Port 7999
+  IdentityFile ~/.ssh/id_nep_ifg
+
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_github
