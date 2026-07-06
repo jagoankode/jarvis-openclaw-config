@@ -41,17 +41,7 @@ Skill opencode: asum-fe-convention, rtk-query-patterns, nextjs-app-router, fix-l
 
 **Location:** `~/convention/code-convention.md`
 **Scope:** ASUM FE — Next.js, TypeScript, Jest, Tailwind
-
-**Rules tersimpan di TOOLS.md:**
-- Module Architecture (component/container/hook split)
-- JSDoc mandatory on public funcs (`@param`, `@returns`)
-- No `useState`/`useEffect` in `.component.tsx`
-- Event Handler: `onClick={handle}` bukan `onClick={() => handle()}`
-- Private funcs: `_` prefix
-- Constants: `UPPER_SNAKE_CASE`
-- Boolean vars: `is`, `has`, `can`, `should` prefix
-- Arrays: plural form
-- Test naming: `should + expected behavior`
+**Rules di TOOLS.md:** Module Architecture, JSDoc, no state/effect in `.component.tsx`, event handler naming, private `_` prefix, `UPPER_SNAKE_CASE` constants, `is/has/can/should` booleans, plural arrays, `should + expected behavior` test naming.
 
 **Wajib dicek:**
 - **Types/Interfaces** di file `.type.ts` — jangan campur di `.utils.ts` atau `.component.tsx`
@@ -60,9 +50,7 @@ Skill opencode: asum-fe-convention, rtk-query-patterns, nextjs-app-router, fix-l
 ## 📌 Branch Convention ASUM
 
 - **`development`** → branch utama / trunk
-- **`feature/*`** → branch out dari `development`
-  - `feature/components`, `feature/product-config`, `feature/case-management`
-  - `feature/master-product-config`, `feature/new-business`
+- **`feature/*`** → branch out dari `development`: `feature/components`, `feature/product-config`, `feature/case-management`, `feature/master-product-config`, `feature/new-business`
 - **Prefix lain** (`fix/*`, `refactor/*`, `chore/*`, dll) → branch out dari salah satu `feature/*`
 - Cek base branch: `git merge-base <branch> <candidate-base>` + `git rev-list --count`
 
@@ -105,124 +93,89 @@ Format dari Bos: `worktree [type]/[IIAU-xxx-nama] → [base-branch]`
 
 ### Strategi Kecepatan (Updated 27 Jun 2026)
 
-1. **Batch 1 exec call** — gabung fetch, diff, convention, tools, cleanup. Jangan pecah.
-2. **Priority skip** — `.style.ts` / `.config.ts` aja? skip ESLint/TS/Test.
-3. **Sub-agent parallel** — review convention dulu, tooling berat di background.
-4. **Jangan baca convention file** tiap review — rules udah di TOOLS.md + MEMORY.md.
-5. **Remote diff dulu** (`git diff origin/$TARGET...origin/$SOURCE`) — jangan switch sebelum tau apa yang berubah.
-6. **JANGAN auto-stash** — local changes discard aja (`git checkout -- .`). Local changes gak relevan buat review.
-7. **ESLint cuma $SRC** — bukan full project.
-8. **TS tetap full project, output di-filter** — keterbatasan tsc.
-9. **Selesai → cleanup** — switch ke `development`, hapus semua local branch lain.
-10. **`--deep` flag** — kalo lo tambahin `--deep`, gue scan logic + potensi bug + solusi di report.
+1. **Batch 1 exec call** — gabung fetch, diff, convention, tools, cleanup
+2. **Priority skip** — `.style.ts` / `.config.ts` aja? skip ESLint/TS/Test
+3. **Sub-agent parallel** — review convention dulu, tooling berat di background
+4. **Remote diff dulu** (`git diff origin/$TARGET...origin/$SOURCE`) — jangan switch sebelum tau apa yang berubah
+5. **JANGAN auto-stash** — local changes discard aja (`git checkout -- .`). Local changes gak relevan buat review
+6. **ESLint cuma $SRC** — bukan full project
+7. **TS tetap full project, output di-filter**
+8. **Selesai → cleanup** — switch ke `development`, hapus semua local branch lain
+9. **`--deep` flag** — kalo lo tambahin `--deep`, gue scan logic + potensi bug + solusi di report
 
 ### Langkah Review PR
 
 1. `git fetch origin $SOURCE $TARGET` dulu
 2. Ambil diff dari remote refs — `git diff origin/$TARGET...origin/$SOURCE`
-3. **GAK PERLU SWITCH** — remote diff udah cukup buat lihat perubahan.
-4. **Cuma switch kalo perlu run lint/typecheck/test** — discard local changes, gak perlu auto-stash.
-5. **Review mencakup:** ESLint source files (changed only), ESLint test files (changed only), TypeScript typecheck (scoped), Jest tests di scope module
+3. **GAK PERLU SWITCH** — remote diff udah cukup buat lihat perubahan
+4. **Cuma switch kalo perlu run lint/typecheck/test** — discard local changes, gak perlu auto-stash
+5. **Review:** ESLint source files (changed only), ESLint test files (changed only), TypeScript typecheck (scoped), Jest tests di scope module
 6. **Report → save** ke `~/project/review-pr/[nama-branch].md` + tampilkan di chat
 7. **Cleanup:** `git switch development`, `git branch -D [SOURCE]`
 
-### Format Report
+### Format Report (minimal)
 
 ```
 ## 📋 PR Review: source → target
 
 ### ✅ Branch & Git Hygiene
-- [x] N items, +/- stats, branch name convention
-
 ### ✅ Code Convention
-- [x] No console.log, no @ts-ignore
-- [ ] No any — ⚠️
-  | File | Line | Error |
-
 ### ✅ ESLint
-- [ ] N errors
-  | File | Line | Error |
 
 Verdict: ✅ / ❌ / ⚠️
 ```
 
 ### ⚠️ Lesson: Jangan Blind Trust ke Automated PR Review
 
-Pas review PR `fix/deductible`, skill `code-review-checklist` ngeflag `_getTableProps` sebagai "missing JSDoc" — ternyata **false positive** (existing export yang cuma diubah parameternya, JSDoc-nya udah ada).
+Pas review PR `fix/deductible`, skill `code-review-checklist` ngeflag `_getTableProps` sebagai "missing JSDoc" — ternyata **false positive** (existing export, JSDoc udah ada, cuma signature berubah).
 
 **Ajarannya:**
 1. Always cross-check skill output sama raw diff sebelum verdict
-2. Kalo skill bilang "missing JSDoc" → cek: apakah beneran export baru atau cuma signature berubah?
+2. Kalo skill bilang "missing JSDoc" → cek: beneran export baru atau cuma signature berubah?
 3. Diff `...` (triple-dot) includes perubahan di existing code, bukan cuma file baru
 4. Better flag "⚠️ perlu dicek" daripada langsung "❌ missing" kalo ragu
-
-## 📋 Template PR Description
-
-```
-Link Ticket: (ambil dari title dengan prefix IIAU-*) pisah dengan koma
-
-📌 Summary:
-summary grouping per PR
-
-🎯 Purpose / Background:
-summary grouping per PR
-
-🛠️ Key Changes:
-summary grouping per PR
-
-📸 Screenshots:
-diisi oleh user
-```
-
-Hanya generate kalo **secara eksplisit diminta** oleh Brillian.
 
 ## 📋 List PR — Format & Aturan
 
 Kalo Brillian minta list PR:
 - Cek **semua** branch feature tanpa tanya lagi: `feature/components`, `feature/product-config`, `feature/case-management`, `feature/master-product-config`, `feature/new-business`
-- Format output:
-  ```
-  email.author@domain.com - YYYY-MM-DD HH:mm
-  branch-name
-  ```
+- Format output: `email.author@domain.com - YYYY-MM-DD HH:mm \n branch-name`
 - Ambil author email & datetime dari latest commit di PR branch
 - Filter merge status: `git merge-base --is-ancestor <sha> origin/<feature-branch>` — skip yang udah merge
 - Dapetin PR refs: `git ls-remote origin | grep "pull-requests"` (bukan `git branch -r`)
 - Cari branch name: `git branch -r --contains <sha>` → filter `pull-requests`
 
-## 🧪 Lesson: Delegasi Sub-Agents buat Project Work
+## 🧪 Key Lesson: Sub-Agents buat Project Work
 
-Brillian nyaranin pake **sub-agents + skills** pas ngerjain project task:
-- **Sub-agents** buat kerja paralel
-- **Skills** — manfaatin skill yang cocok
-- **Gak usah everything in main thread** — delegasi yang berat-berat
+Brillian nyaranin pake **sub-agents + skills** pas ngerjain project task. Gak usah everything in main thread — delegasi yang berat-berat.
 
-## 🧪 IIAU-778 Bug Quill Editor — Key Lesson
+## 🧪 IIAU-778 Bug Quill Editor — Complete Summary
 
-**Hierarchical Numbering + KaTeX + PDF Preview**
+**Branch:** `fix/IIAU-778-bug-quil-editor` (from `origin/feature/components`)
+**Worktree:** `/var/www/html/project-asum/IIAU-778-bug-quil-editor`
 
-### Hierarchical Numbering
-- CSS counter approach (1, 1.1, 1.1.1, 1.1.1.1)
-- `counter-increment` on `.ql-editor ol li` per indent level
-- `content: counter()` pada `.ql-ui:before` + `!important`
+### Issues Fixed (4)
 
-### KaTeX Formula
-- `import katex from 'katex'` + CSS import
-- `Quill.register('formats/formula', ...)` + `window.katex = katex`
+| Issue | Root Cause | Fix |
+|-------|-----------|-----|
+| **Auto Page Break** | Feature not needed | Deleted `useAutoPageBreak`, `_wrapOnChange`, `AUTO_PAGE_BREAK_PATTERN` |
+| **Tab Key Lost After Reload** | Clipboard regex `/[^\S\u00a0]/g` converts `\t` to space | Custom Tab binding inserts `\u00a0×4` (nbsp) + safeValue backward compat |
+| **Dual Language Border** | `borderless-table` class lost during clipboard conversion | Register `border-color` StyleAttributor, inject inline `border-color: transparent` on `<td>` |
+| **Hierarchical Numbering** | CSS selector scope mismatch — PDF preview HTML bare (no wrapper) | Pre-compute numbers in JS → embed `data-number` attribute → `content: attr(data-number)` in `DOCUMENT_COMPOSER_PRINT_CSS` |
+| **KaTeX Formula** | KaTeX not registered for PDF | `import katex`, `window.katex = katex`, KaTeX CSS via generated `katex.css.ts` |
 
-### PDF Preview — Key Learning
-CSS selectors scoped ke `.document-composer-quill-wrapper .ql-editor` **tidak** bekerja di PDF preview karena HTML yang dikirim bare (tanpa wrapper).
-- **Fix:** Pre-compute numbers in JS → `_computePdfListNumbers()` → embed `data-number` attribute
-- CSS pakai `content: attr(data-number) ". "` via `DOCUMENT_COMPOSER_PRINT_CSS`
-- KaTeX CSS injection via generated `katex.css.ts` file
+### PDF Preview — Key Technical Learning
+CSS selectors scoped to `.document-composer-quill-wrapper .ql-editor` **tidak** bekerja di PDF preview karena HTML yang dikirim bare (tanpa wrapper). CSS counters juga unreliable di PDF API rendering. Solusi: JS pre-compute + `data-number` attribute.
+
+**Status:** Not yet pushed (waiting for Brillian's confirmation).
 
 ## 🧪 Autonomous Studio Project (Saved for Later)
 
 - **Path:** `/home/nep/project/autonomous-studio`
 - **TUI** di `src/jim.ts` — OpenCode-style full-screen terminal UI
-- **Status:** Done (basic features: menu, 6 commands, CLI args, proper cleanup)
-- **Bug fixed:** Missing stdin keypress listener (readline.emitKeypressEvents + resume)
-- **Run:** `npx tsx src/jim.ts`
+- **Status:** Done (basic: menu, 6 commands, CLI args, proper cleanup)
+- **Bug fixed:** Missing stdin keypress listener (`readline.emitKeypressEvents` + `resume`)
+- **Run:** `npx tsx src/jim.ts` or globally `autonomous`
 
 ## 🧪 Portfolio Project
 
@@ -256,21 +209,21 @@ Setelah **deliver hasil**, langsung:
 2. **Tanya** Bos Jarvis: ada koreksi atau enggak?
 3. Kalo **gak ada koreksi** → **new session**
 
-## 🚀 2026-07-05 — VPS Migration & Git Backup
+## 🚀 VPS Setup (Jimmy-OpenClaw on jimmy-vps)
 
-### VPS Setup (Jimmy-OpenClaw)
-- **IP:** 103.93.161.116
-- **User:** jimmy-bot
-- **SSH key:** ~/.ssh/jimmy-openclaw.pem
-- **SSH alias:** `jimmy-vps` (via ~/.ssh/config)
-- **OpenClaw:** v2026.6.11
-- **Model:** opencode-go/deepseek-v4-flash (primary)
-- **API key:** sk-cRj…ghoZ (opencode-go)
-- **Gateway:** port 18789, bind LAN
-- **Telegram:** @jimmy_newtron_bot — running via VPS
+| Item | Detail |
+|------|--------|
+| **IP** | 103.93.161.116 |
+| **User** | jimmy-bot |
+| **SSH key** | `~/.ssh/jimmy-openclaw.pem` |
+| **SSH alias** | `jimmy-vps` |
+| **OpenClaw** | v2026.6.11 |
+| **Primary model** | opencode-go/deepseek-v4-flash |
+| **API key** | sk-cRj…ghoZ (opencode-go) |
+| **Gateway** | port 18789, bind LAN |
+| **Telegram** | @jimmy_newtron_bot — running via VPS |
 
 ### Git Backup
 - **Repo:** github.com/jagoankode/jarvis-openclaw-config
 - **Isi:** Semua workspace files + daily notes
-- **Cara restore:** git clone ke ~/.openclaw/workspace di mana aja
-
+- **Cara restore:** git clone ke `~/.openclaw/workspace` di mana aja
