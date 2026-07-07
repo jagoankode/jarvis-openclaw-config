@@ -149,33 +149,33 @@ Kalo Brillian minta list PR:
 
 Brillian nyaranin pake **sub-agents + skills** pas ngerjain project task. Gak usah everything in main thread — delegasi yang berat-berat.
 
-## 🧪 IIAU-778 Bug Quill Editor — Complete Summary
+## 🧪 IIAU-778 Bug Quill Editor
 
-**Branch:** `fix/IIAU-778-bug-quil-editor` (from `origin/feature/components`)
+**Branch:** `fix/IIAU-778-bug-quil-editor` → `feature/components`
 **Worktree:** `/var/www/html/project-asum/IIAU-778-bug-quil-editor`
 
-### Issues Fixed (4)
-
+### 5 Issues Fixed
 | Issue | Root Cause | Fix |
 |-------|-----------|-----|
 | **Auto Page Break** | Feature not needed | Deleted `useAutoPageBreak`, `_wrapOnChange`, `AUTO_PAGE_BREAK_PATTERN` |
-| **Tab Key Lost After Reload** | Clipboard regex `/[^\S\u00a0]/g` converts `\t` to space | Custom Tab binding inserts `\u00a0×4` (nbsp) + safeValue backward compat |
-| **Dual Language Border** | `borderless-table` class lost during clipboard conversion | Register `border-color` StyleAttributor, inject inline `border-color: transparent` on `<td>` |
-| **Hierarchical Numbering** | CSS selector scope mismatch — PDF preview HTML bare (no wrapper) | Pre-compute numbers in JS → embed `data-number` attribute → `content: attr(data-number)` in `DOCUMENT_COMPOSER_PRINT_CSS` |
-| **KaTeX Formula** | KaTeX not registered for PDF | `import katex`, `window.katex = katex`, KaTeX CSS via generated `katex.css.ts` |
+| **Tab Key Lost After Reload** | Clipboard regex converts `\t` to space | Custom Tab binding inserts `\u00a0×4` (nbsp) |
+| **Dual Language Border** | `borderless-table` class lost in clipboard | Register `border-color` StyleAttributor, inject inline `border-color: transparent` |
+| **Hierarchical Numbering** | CSS selectors scoped to wrapper, PDF preview HTML is bare | JS pre-compute → `data-number` attr → `content: attr(data-number)` |
+| **KaTeX Formula** | Not registered for PDF rendering | `import katex`, `window.katex=katex`, generated `katex.css.ts` |
 
-### PDF Preview — Key Technical Learning
-CSS selectors scoped to `.document-composer-quill-wrapper .ql-editor` **tidak** bekerja di PDF preview karena HTML yang dikirim bare (tanpa wrapper). CSS counters juga unreliable di PDF API rendering. Solusi: JS pre-compute + `data-number` attribute.
+### Key Learning
+CSS scoped to `.document-composer-quill-wrapper .ql-editor` **tidak** bekerja di PDF preview (HTML dikirim bare tanpa wrapper). CSS counters juga unreliable di PDF API. Solusi: JS pre-compute + `data-number` attribute.
 
-**Status:** Not yet pushed (waiting for Brillian's confirmation).
+**Status:** Waiting for Brillian's confirmation to push.
 
-## 🧪 Autonomous Studio Project (Saved for Later)
+## 🧪 Autonomous Studio Project (On Hold)
 
 - **Path:** `/home/nep/project/autonomous-studio`
 - **TUI** di `src/jim.ts` — OpenCode-style full-screen terminal UI
-- **Status:** Done (basic: menu, 6 commands, CLI args, proper cleanup)
-- **Bug fixed:** Missing stdin keypress listener (`readline.emitKeypressEvents` + `resume`)
+- **Status:** Basic done — menu, 6 commands (/personas, /generate, /chat, /workflow, /help, /exit), CLI args, proper cleanup
+- **Bug fix:** Missing stdin keypress listener (`readline.emitKeypressEvents` + `resume`)
 - **Run:** `npx tsx src/jim.ts` or globally `autonomous`
+- **TODO:** Visual polish, resize handling, /workflow placeholder
 
 ## 🧪 Portfolio Project
 
