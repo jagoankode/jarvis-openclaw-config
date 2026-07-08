@@ -21,6 +21,15 @@
 
 Alur kerja: **Diskusi → breakdown → plan → delegasi → review → generate PR description → tanya koreksi → new session**
 
+### Review Convention Checklist (from June 19 practice)
+Pas review PR, wajib cek:
+1. ESLint source files (changed files only)
+2. ESLint test files (changed files only)
+3. TypeScript typecheck (changed files only — `tsc --noEmit` + grep)
+4. Jest tests di scope module
+
+Jangan cuma ESLint source — test files dan TS sering lolos dari CI tapi ada error.
+
 ## 🔧 OpenCode CLI — Delegasi Tugas Berat
 
 **CLI:** `opencode` di `~/.opencode/bin/opencode`
@@ -153,6 +162,7 @@ Brillian nyaranin pake **sub-agents + skills** pas ngerjain project task. Gak us
 
 **Branch:** `fix/IIAU-778-bug-quil-editor` → `feature/components`
 **Worktree:** `/var/www/html/project-asum/IIAU-778-bug-quil-editor`
+**Status:** ⏳ Waiting for Brillian's confirmation to push (since June 29)
 
 ### 5 Issues Fixed
 | Issue | Root Cause | Fix |
@@ -166,16 +176,17 @@ Brillian nyaranin pake **sub-agents + skills** pas ngerjain project task. Gak us
 ### Key Learning
 CSS scoped to `.document-composer-quill-wrapper .ql-editor` **tidak** bekerja di PDF preview (HTML dikirim bare tanpa wrapper). CSS counters juga unreliable di PDF API. Solusi: JS pre-compute + `data-number` attribute.
 
-**Status:** Waiting for Brillian's confirmation to push.
+Detail lengkap di [`memory/archive/2026-06-28.md`] dan [`memory/archive/2026-06-29.md`].
 
-## 🧪 Autonomous Studio Project (On Hold)
+## 🧪 Autonomous Studio Project (On Hold Since July 3)
 
 - **Path:** `/home/nep/project/autonomous-studio`
 - **TUI** di `src/jim.ts` — OpenCode-style full-screen terminal UI
-- **Status:** Basic done — menu, 6 commands (/personas, /generate, /chat, /workflow, /help, /exit), CLI args, proper cleanup
-- **Bug fix:** Missing stdin keypress listener (`readline.emitKeypressEvents` + `resume`)
+- **Status:** Functional — menu, state machine, scroll UI, 6 commands (/personas, /generate, /chat, /workflow, /help, /exit), CLI args, proper cleanup
+- **Fixed:** Missing stdin keypress listener (`readline.emitKeypressEvents` + `resume`)
 - **Run:** `npx tsx src/jim.ts` or globally `autonomous`
 - **TODO:** Visual polish, resize handling, /workflow placeholder
+- Detail: [`memory/archive/2026-07-03.md`]
 
 ## 🧪 Portfolio Project
 
@@ -227,3 +238,19 @@ Setelah **deliver hasil**, langsung:
 - **Repo:** github.com/jagoankode/jarvis-openclaw-config
 - **Isi:** Semua workspace files + daily notes
 - **Cara restore:** git clone ke `~/.openclaw/workspace` di mana aja
+
+## 🐍 DeepClaude Setup
+- **Path:** `~/.local/bin/deepclaude`
+- **Config:** `~/.config/deepclaude/config`
+- **Model:** deepseek-v4-pro (utama), deepseek-v4-flash (sub-agent)
+- **Claude Code CLI** v2.1.175 juga terinstall
+- **Panggil:** `deepclaude -p "prompt"`
+
+## 📦 ASUM Product Configuration Architecture (from June 20)
+- **2 layer:** `master-product-config/configuration` (change history + workflow) dan `product-configuration` (core create/edit)
+- **Product Components (master data):** rate, formula, cost-component, cover-note, commission-note, deductible, object, placing-slip, policy-clause, policy-template, premium-note, receipt, validation
+- **Form product:** Product Info → Distribution Channel → Plan Tabs (Coverage, Underwriting Data, System Data, Documents, Supporting Files)
+- **Underwriting Data:** general info, material fact, cost component, deductible, discount, limit of liability, payment scheme, loss ratio
+- **System Data:** formula, validation, object transaction request/response
+- **Workflow:** WFProductConfig → WFApprovalProductConfig (via case-management)
+- **Tech:** Next.js, TypeScript, React Hook Form, Redux RTK Query, yup validation
