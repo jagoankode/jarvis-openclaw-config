@@ -222,6 +222,16 @@ Setelah **deliver hasil**, langsung:
 
 ## 🚀 VPS Setup (Jimmy-OpenClaw on jimmy-vps)
 
+### 🔁 Auto Tunnel WSL → VPS (port 43210)
+- **WSL → VPS:** Autossh reverse tunnel port 43210 → localhost:22
+- **Systemd service:** `/etc/systemd/system/reverse-tunnel.service` (ExitOnForwardFailure=yes)
+- **Cron @reboot:** Backup autossh dengan ExitOnForwardFailure=no + cleanup di VPS
+- **Health check:** Cron `*/5 * * * *` cek port 43210 di VPS, auto-restart kalo mati
+- **Cleanup:** NOPASSWD sudo di VPS buat user jimmy-bot (kill port 43210)
+- **VPS → WSL:** `ssh wsl-tunnel` (user nep, key tunnel-wsl, via 127.0.0.1:43210)
+- **Script:** `/home/nep/.local/bin/tunnel-wsl.sh` — cleanup + start autossh
+- **Key:** `vps-tunnel` (laptop → VPS), `tunnel-wsl` (VPS → WSL via tunnel)
+
 | Item | Detail |
 |------|--------|
 | **IP** | 103.93.161.116 |
