@@ -21,15 +21,6 @@
 
 Alur kerja: **Diskusi → breakdown → plan → delegasi → review → generate PR description → tanya koreksi → new session**
 
-### Review Convention Checklist (from June 19 practice)
-Pas review PR, wajib cek:
-1. ESLint source files (changed files only)
-2. ESLint test files (changed files only)
-3. TypeScript typecheck (changed files only — `tsc --noEmit` + grep)
-4. Jest tests di scope module
-
-Jangan cuma ESLint source — test files dan TS sering lolos dari CI tapi ada error.
-
 ## 🔧 OpenCode CLI — Delegasi Tugas Berat
 
 **CLI:** `opencode` di `~/.opencode/bin/opencode`
@@ -162,21 +153,19 @@ Brillian nyaranin pake **sub-agents + skills** pas ngerjain project task. Gak us
 
 **Branch:** `fix/IIAU-778-bug-quil-editor` → `feature/components`
 **Worktree:** `/var/www/html/project-asum/IIAU-778-bug-quil-editor`
-**Status:** ⏳ Waiting for Brillian's confirmation to push (since June 29)
+**Status:** ⏳ Waiting for Brillian's confirmation to push (since June 29 — ~10 days no action)
 
 ### 5 Issues Fixed
-| Issue | Root Cause | Fix |
-|-------|-----------|-----|
-| **Auto Page Break** | Feature not needed | Deleted `useAutoPageBreak`, `_wrapOnChange`, `AUTO_PAGE_BREAK_PATTERN` |
-| **Tab Key Lost After Reload** | Clipboard regex converts `\t` to space | Custom Tab binding inserts `\u00a0×4` (nbsp) |
-| **Dual Language Border** | `borderless-table` class lost in clipboard | Register `border-color` StyleAttributor, inject inline `border-color: transparent` |
-| **Hierarchical Numbering** | CSS selectors scoped to wrapper, PDF preview HTML is bare | JS pre-compute → `data-number` attr → `content: attr(data-number)` |
-| **KaTeX Formula** | Not registered for PDF rendering | `import katex`, `window.katex=katex`, generated `katex.css.ts` |
+- **Auto Page Break** — Feature not needed, deleted `useAutoPageBreak`, `_wrapOnChange`, `AUTO_PAGE_BREAK_PATTERN`
+- **Tab Key Lost After Reload** — Clipboard regex converts `\t` to space, fixed with custom Tab binding inserting `\u00a0×4`
+- **Dual Language Border** — `borderless-table` class lost in clipboard, fixed register `border-color` StyleAttributor + inline `border-color: transparent`
+- **Hierarchical Numbering** — CSS selectors scoped to wrapper but PDF preview HTML is bare, fixed JS pre-compute → `data-number` attr → `content: attr(data-number)`
+- **KaTeX Formula** — Not registered for PDF rendering, fixed with `import katex`, `window.katex=katex`, generated `katex.css.ts`
 
 ### Key Learning
-CSS scoped to `.document-composer-quill-wrapper .ql-editor` **tidak** bekerja di PDF preview (HTML dikirim bare tanpa wrapper). CSS counters juga unreliable di PDF API. Solusi: JS pre-compute + `data-number` attribute.
+CSS scoped to `.document-composer-quill-wrapper .ql-editor` **tidak** bekerja di PDF preview (HTML dikirim bare tanpa wrapper). CSS counters unreliable di PDF API. Solusi: JS pre-compute + `data-number` attribute.
 
-Detail lengkap di [`memory/archive/2026-06-28.md`] dan [`memory/archive/2026-06-29.md`].
+Detail: [`memory/archive/2026-06-28.md`](6 issues found) → [`memory/archive/2026-06-29.md`](hierarchical numbering + KaTeX)
 
 ## 🧪 Autonomous Studio Project (On Hold Since July 3)
 
