@@ -37,113 +37,87 @@ Alur kerja: **Diskusi → breakdown → plan → delegasi → review → generat
 
 Skill opencode: asum-fe-convention, rtk-query-patterns, nextjs-app-router, fix-lint-ts-jest, dll
 
-## 📌 Convention & Code Organization
-
-**Location:** `~/convention/code-convention.md`
-**Scope:** ASUM FE — Next.js, TypeScript, Jest, Tailwind
-**Rules di TOOLS.md:** Module Architecture, JSDoc, no state/effect in `.component.tsx`, event handler naming, private `_` prefix, `UPPER_SNAKE_CASE` constants, `is/has/can/should` booleans, plural arrays, `should + expected behavior` test naming.
-
-**Wajib dicek:**
-- **Types/Interfaces** di file `.type.ts` — jangan campur di `.utils.ts` atau `.component.tsx`
-- **Reusable utilities** di `src/libs/utils/`, module-specific utils di module sendiri
-
-## 📌 Branch Convention ASUM
-
-- **`development`** → branch utama / trunk
-- **`feature/*`** → branch out dari `development`: `feature/components`, `feature/product-config`, `feature/case-management`, `feature/master-product-config`, `feature/new-business`
-- **Prefix lain** (`fix/*`, `refactor/*`, `chore/*`, dll) → branch out dari salah satu `feature/*`
-- Cek base branch: `git merge-base <branch> <candidate-base>` + `git rev-list --count`
-
 ## 📌 ASUM Project Context
 
 - **Main repo (review PR & git ops):** `~/project/epics-portal`
 - **Remote:** `ssh://git@code.ifg-life.id:7999/iaso/epics-portal.git`
 - **Worktree (coding/refactor):** `/var/www/html/project-asum/` — dari repo `epics-development`
-- **Tech:** Next.js, TypeScript, React Hook Form, Redux RTK Query, yup, Tailwind, React Table, ESLint strict
-- **Rules:** Scoped lint rules, pre-commit hook (lint + test coverage), JSDoc required, private funcs `_` prefixed
+
+### Tech Stack
+Next.js, TypeScript, React Hook Form, Redux RTK Query, yup, Tailwind, React Table, ESLint strict, scoped lint rules, pre-commit hook (lint + test coverage)
+
+### Code Convention
+`~/convention/code-convention.md`:
+- Module Architecture (component/container/hook split)
+- JSDoc mandatory public funcs — `@param {Type} name - desc`
+- Types/Interfaces di `.type.ts` — jangan campur di `.utils.ts` atau `.component.tsx`
+- No `useState`/`useEffect` in `.component.tsx`; private funcs `_` prefix
+- Event Handler: `onClick={handle}` not `onClick={() => handle()}`
+- Constants: `UPPER_SNAKE_CASE`; Boolean vars: `is/has/can/should` prefix; Arrays: plural
+- Test naming: `should + expected behavior`
+- Reusable utilities di `src/libs/utils/`, module-specific utils di module sendiri
+
+### Branch Convention
+- `development` → trunk
+- `feature/components`, `feature/product-config`, `feature/case-management`, `feature/master-product-config`, `feature/new-business`
+- `fix/*|refactor/*|chore/*` → branch out dari salah satu `feature/*`
+- Cek base: `git merge-base <branch> <candidate-base>` + `git rev-list --count`
 
 ### 🚫 Location Rules
-
-1. **Coding / refactor** → `/var/www/html/project-asum/` (pake worktree dari `epics-development`)
+1. **Coding / refactor** → `/var/www/html/project-asum/` (worktree dari `epics-development`)
 2. **Review PR** → `~/project/epics-portal` (switch branch, **JANGAN** bikin worktree)
-3. **Bikin worktree** → `cd /var/www/html/project-asum/epics-development && git worktree add ...`
+3. **Worktree baru** — WAJIB tanya: branch name, path, base branch. Format: `worktree [type]/[IIAU-xxx-nama] → [base-branch]`
+4. **Jangan auto commit & push** — kerjain selesai → tunjukkin hasil → **TUNGGU INSTRUKSI**
 
-### 🚫 WAJIB Tanya Sebelum Bikin Worktree
-
-1. Branch name apa?
-2. Worktree path / folder name apa?
-3. Base dari branch mana? (origin/xxx)
-
-Format dari Bos: `worktree [type]/[IIAU-xxx-nama] → [base-branch]`
-
-**Langkah bikin worktree:**
-1. Cari main repo dari existing worktree: `cat [existing-worktree]/.git`
-2. `cd [MAIN-REPO]`
-3. `git fetch origin [BASE-BRANCH]`
-4. `git worktree add -b [type/IIAU-xxx-nama] /var/www/html/project-asum/[IIAU-xxx] origin/[base-branch]`
-
-### 🚫 Jangan Auto Commit & Push
-
-1. Kerjain tugas sampai selesai
-2. Tunjukin hasilnya
-3. **TUNGGU INSTRUKSI** buat commit & push
-4. Jangan auto-generate PR description — hanya generate kalo **secara eksplisit diminta**
+### Langkah Bikin Worktree
+1. `cat [existing-worktree]/.git` → cari main repo
+2. `cd [MAIN-REPO]` → `git fetch origin [BASE-BRANCH]`
+3. `git worktree add -b [type/IIAU-xxx-nama] /var/www/html/project-asum/[IIAU-xxx] origin/[base-branch]`
 
 ## 🚀 PR Review — Workflow & Strategi
 
-### Strategi Kecepatan (Updated 27 Jun 2026)
-
+### Speed Strategy
 1. **Batch 1 exec call** — gabung fetch, diff, convention, tools, cleanup
 2. **Priority skip** — `.style.ts` / `.config.ts` aja? skip ESLint/TS/Test
 3. **Sub-agent parallel** — review convention dulu, tooling berat di background
-4. **Remote diff dulu** (`git diff origin/$TARGET...origin/$SOURCE`) — jangan switch sebelum tau apa yang berubah
-5. **JANGAN auto-stash** — local changes discard aja (`git checkout -- .`). Local changes gak relevan buat review
-6. **ESLint cuma $SRC** — bukan full project
-7. **TS tetap full project, output di-filter**
-8. **Selesai → cleanup** — switch ke `development`, hapus semua local branch lain
-9. **`--deep` flag** — kalo lo tambahin `--deep`, gue scan logic + potensi bug + solusi di report
+4. **Remote diff dulu** (`git diff origin/$TARGET...origin/$SOURCE`) — jangan switch dulu
+5. **JANGAN auto-stash** — `git checkout -- .` aja
+6. **ESLint cuma $SRC**, TS tetap full project output di-filter
+7. **Selesai → cleanup** — switch ke `development`, hapus semua local branch lain
+8. **`--deep`** — scan logic + potensi bug + solusi
 
-### Langkah Review PR
+### Steps
+1. `git fetch origin $SOURCE $TARGET` → remote diff — **GAK PERLU SWITCH**
+2. Switch cuma kalo perlu run lint/typecheck/test — discard local changes
+3. Review: ESLint source (changed), ESLint test (changed), TS typecheck (scoped), Jest di scope module
+4. **Report** → save ke `~/project/review-pr/[nama-branch].md` + tampilkan di chat
+5. **Cleanup:** `git switch development`, `git branch -D [SOURCE]`
 
-1. `git fetch origin $SOURCE $TARGET` dulu
-2. Ambil diff dari remote refs — `git diff origin/$TARGET...origin/$SOURCE`
-3. **GAK PERLU SWITCH** — remote diff udah cukup buat lihat perubahan
-4. **Cuma switch kalo perlu run lint/typecheck/test** — discard local changes, gak perlu auto-stash
-5. **Review:** ESLint source files (changed only), ESLint test files (changed only), TypeScript typecheck (scoped), Jest tests di scope module
-6. **Report → save** ke `~/project/review-pr/[nama-branch].md` + tampilkan di chat
-7. **Cleanup:** `git switch development`, `git branch -D [SOURCE]`
-
-### Format Report (minimal)
-
+### Report Format (minimal)
 ```
 ## 📋 PR Review: source → target
-
 ### ✅ Branch & Git Hygiene
 ### ✅ Code Convention
 ### ✅ ESLint
-
 Verdict: ✅ / ❌ / ⚠️
 ```
 
 ### ⚠️ Lesson: Jangan Blind Trust ke Automated PR Review
-
-Pas review PR `fix/deductible`, skill `code-review-checklist` ngeflag `_getTableProps` sebagai "missing JSDoc" — ternyata **false positive** (existing export, JSDoc udah ada, cuma signature berubah).
-
-**Ajarannya:**
-1. Always cross-check skill output sama raw diff sebelum verdict
-2. Kalo skill bilang "missing JSDoc" → cek: beneran export baru atau cuma signature berubah?
-3. Diff `...` (triple-dot) includes perubahan di existing code, bukan cuma file baru
-4. Better flag "⚠️ perlu dicek" daripada langsung "❌ missing" kalo ragu
+PR `fix/deductible` — skill ngeflag `_getTableProps` sebagai "missing JSDoc" → **false positive** (existing export, cuma signature berubah).
+1. Cross-check skill output sama raw diff
+2. "missing JSDoc" → cek: beneran export baru atau cuma signature berubah?
+3. Diff `...` includes perubahan existing code
+4. Better "⚠️ perlu dicek" daripada langsung "❌"
 
 ## 📋 List PR — Format & Aturan
 
 Kalo Brillian minta list PR:
-- Cek **semua** branch feature tanpa tanya lagi: `feature/components`, `feature/product-config`, `feature/case-management`, `feature/master-product-config`, `feature/new-business`
-- Format output: `email.author@domain.com - YYYY-MM-DD HH:mm \n branch-name`
-- Ambil author email & datetime dari latest commit di PR branch
-- Filter merge status: `git merge-base --is-ancestor <sha> origin/<feature-branch>` — skip yang udah merge
-- Dapetin PR refs: `git ls-remote origin | grep "pull-requests"` (bukan `git branch -r`)
-- Cari branch name: `git branch -r --contains <sha>` → filter `pull-requests`
+- Cek **semua** feature branch: `feature/components`, `feature/product-config`, `feature/case-management`, `feature/master-product-config`, `feature/new-business`
+- Format: `email.author@domain.com - YYYY-MM-DD HH:mm \n branch-name`
+- Author email & datetime dari latest commit di PR branch
+- Filter merge: `git merge-base --is-ancestor <sha> origin/<feature-branch>` — skip merged
+- PR refs: `git ls-remote origin | grep "pull-requests"` (bukan `git branch -r`)
+- Branch name: `git branch -r --contains <sha>` → filter `pull-requests`
 
 ## 🧪 Key Lesson: Sub-Agents buat Project Work
 
@@ -153,29 +127,26 @@ Brillian nyaranin pake **sub-agents + skills** pas ngerjain project task. Gak us
 
 **Branch:** `fix/IIAU-778-bug-quil-editor` → `feature/components`
 **Worktree:** `/var/www/html/project-asum/IIAU-778-bug-quil-editor`
-**Status:** ⏳ Waiting for Brillian's confirmation to push (since June 29 — ~10 days no action)
+**Status:** ⏳ Waiting for Brillian's confirmation to push (since June 29 — ~11 days)
 
 ### 5 Issues Fixed
-- **Auto Page Break** — Feature not needed, deleted `useAutoPageBreak`, `_wrapOnChange`, `AUTO_PAGE_BREAK_PATTERN`
+- **Auto Page Break** — Deleted `useAutoPageBreak`, `_wrapOnChange`, `AUTO_PAGE_BREAK_PATTERN`
 - **Tab Key Lost After Reload** — Clipboard regex converts `\t` to space, fixed with custom Tab binding inserting `\u00a0×4`
 - **Dual Language Border** — `borderless-table` class lost in clipboard, fixed register `border-color` StyleAttributor + inline `border-color: transparent`
 - **Hierarchical Numbering** — CSS selectors scoped to wrapper but PDF preview HTML is bare, fixed JS pre-compute → `data-number` attr → `content: attr(data-number)`
-- **KaTeX Formula** — Not registered for PDF rendering, fixed with `import katex`, `window.katex=katex`, generated `katex.css.ts`
+- **KaTeX Formula** — Not registered for PDF rendering, fixed with `import katex`, `window.katex=katex`, `katex.css.ts`
 
 ### Key Learning
-CSS scoped to `.document-composer-quill-wrapper .ql-editor` **tidak** bekerja di PDF preview (HTML dikirim bare tanpa wrapper). CSS counters unreliable di PDF API. Solusi: JS pre-compute + `data-number` attribute.
+CSS scoped to `.document-composer-quill-wrapper .ql-editor` **tidak** bekerja di PDF preview (HTML dikirim bare). CSS counters unreliable di PDF API → JS pre-compute + `data-number` attribute.
 
-Detail: [`memory/archive/2026-06-28.md`](6 issues found) → [`memory/archive/2026-06-29.md`](hierarchical numbering + KaTeX)
+Detail: [`memory/archive/2026-06-28.md`] → [`memory/archive/2026-06-29.md`]
 
 ## 🧪 Autonomous Studio Project (On Hold Since July 3)
 
-- **Path:** `/home/nep/project/autonomous-studio`
-- **TUI** di `src/jim.ts` — OpenCode-style full-screen terminal UI
-- **Status:** Functional — menu, state machine, scroll UI, 6 commands (/personas, /generate, /chat, /workflow, /help, /exit), CLI args, proper cleanup
-- **Fixed:** Missing stdin keypress listener (`readline.emitKeypressEvents` + `resume`)
+- **Path:** `/home/nep/project/autonomous-studio` → `src/jim.ts`
+- **Status:** Functional — OpenCode-style TUI, 6 commands (/personas, /generate, /chat, /workflow, /help, /exit), CLI args, state machine, menu overlay, scroll UI
 - **Run:** `npx tsx src/jim.ts` or globally `autonomous`
 - **TODO:** Visual polish, resize handling, /workflow placeholder
-- Detail: [`memory/archive/2026-07-03.md`]
 
 ## 🧪 Portfolio Project
 
@@ -185,41 +156,35 @@ Detail: [`memory/archive/2026-06-28.md`](6 issues found) → [`memory/archive/20
 - **CV:** `/home/nep/project/portofolio/assets/pdf/Brillian-Andrie-CV.pdf`
 - **Tech stack:** JS/TS, React, Next.js, Node.js, Go, Java, Swift, Kotlin, iOS/Android Native, Docker, Jenkins, Git, Tailwind, REST API, Microservices, AI/LLM, OpenClaw
 
-## Skills yang Gue Punya (Workspace Skills)
+## 🛠️ Workspace Skills
 
 | Skill | Dipake Kapan |
 |-------|-------------|
-| 🧭 context-scout | Sebelum modify code, cari context relevan |
+| 🧭 context-scout | Sebelum modify code, cari context |
 | 🛡️ diff-guardian | Sebelum finalisasi, cek minimal diff |
-| 🔍 error-triage | Pas ada runtime/build/ESLint/TS/test error |
-| 📋 handoff-summary | Akhir coding session, bikin ringkasan |
-| 🚧 refactor-gate | Sebelum refactor, tentuin apakah perlu |
-| 💰 token-saver | Pas limited context / model mahal |
+| 🔍 error-triage | Pas runtime/build/ESLint/TS/test error |
+| 📋 handoff-summary | Akhir coding session |
+| 🚧 refactor-gate | Sebelum refactor |
+| 💰 token-saver | Limited context / model mahal |
 | 🧠 smart-routing | Auto pilih model sesuai complexity |
-| 👁️ vision-router | Kalo dikasih gambar, tentuin jenis & cara handle |
-| 🎨 figma-screenshot-analyzer | Konversi Figma screenshot ke frontend code |
+| 👁️ vision-router | Gambar → tentuin jenis & cara handle |
+| 🎨 figma-screenshot-analyzer | Figma screenshot → frontend code |
 | 📖 qmd | Nyari di local markdown docs |
 
 **Workflow coding:** vision-router → figma-screenshot-analyzer → context-scout → (ngoding/delegasi) → refactor-gate → error-triage → diff-guardian → handoff-summary
 
-## 🚨 Rules: New Session Flow
+## 🚨 New Session Flow
 
-Setelah **deliver hasil**, langsung:
-1. Jalankan **compact** dulu
-2. **Tanya** Bos Jarvis: ada koreksi atau enggak?
-3. Kalo **gak ada koreksi** → **new session**
+Setelah **deliver hasil**: compact → tanya Bos Jarvis koreksi → kalo gak ada → **new session**
 
-## 🚀 VPS Setup (Jimmy-OpenClaw on jimmy-vps)
+## 🚀 VPS Setup (jimmy-vps)
 
-### 🔁 Auto Tunnel WSL → VPS (port 43210)
+### Auto Tunnel WSL → VPS
 - **WSL → VPS:** Autossh reverse tunnel port 43210 → localhost:22
-- **Systemd service:** `/etc/systemd/system/reverse-tunnel.service` (ExitOnForwardFailure=yes)
-- **Cron @reboot:** Backup autossh dengan ExitOnForwardFailure=no + cleanup di VPS
-- **Health check:** Cron `*/5 * * * *` cek port 43210 di VPS, auto-restart kalo mati
-- **Cleanup:** NOPASSWD sudo di VPS buat user jimmy-bot (kill port 43210)
-- **VPS → WSL:** `ssh wsl-tunnel` (user nep, key tunnel-wsl, via 127.0.0.1:43210)
-- **Script:** `/home/nep/.local/bin/tunnel-wsl.sh` — cleanup + start autossh
-- **Key:** `vps-tunnel` (laptop → VPS), `tunnel-wsl` (VPS → WSL via tunnel)
+- **Systemd:** `/etc/systemd/system/reverse-tunnel.service` + cron @reboot backup
+- **Health check:** Cron `*/5 * * * *` cek port 43210, auto-restart
+- **VPS → WSL:** `ssh wsl-tunnel` (via 127.0.0.1:43210)
+- **Script:** `/home/nep/.local/bin/tunnel-wsl.sh`
 
 | Item | Detail |
 |------|--------|
@@ -234,22 +199,19 @@ Setelah **deliver hasil**, langsung:
 | **Telegram** | @jimmy_newtron_bot — running via VPS |
 
 ### Git Backup
-- **Repo:** github.com/jagoankode/jarvis-openclaw-config
-- **Isi:** Semua workspace files + daily notes
-- **Cara restore:** git clone ke `~/.openclaw/workspace` di mana aja
+- **Repo:** github.com/jagoankode/jarvis-openclaw-config — semua workspace + daily notes
+- **Restore:** clone ke `~/.openclaw/workspace`
 
 ## 🐍 DeepClaude Setup
-- **Path:** `~/.local/bin/deepclaude`
-- **Config:** `~/.config/deepclaude/config`
+- **Path:** `~/.local/bin/deepclaude` | **Config:** `~/.config/deepclaude/config`
 - **Model:** deepseek-v4-pro (utama), deepseek-v4-flash (sub-agent)
-- **Claude Code CLI** v2.1.175 juga terinstall
+- **Juga ada:** Claude Code CLI v2.1.175
 - **Panggil:** `deepclaude -p "prompt"`
 
-## 📦 ASUM Product Configuration Architecture (from June 20)
+## 📦 ASUM Product Configuration Architecture
 - **2 layer:** `master-product-config/configuration` (change history + workflow) dan `product-configuration` (core create/edit)
 - **Product Components (master data):** rate, formula, cost-component, cover-note, commission-note, deductible, object, placing-slip, policy-clause, policy-template, premium-note, receipt, validation
-- **Form product:** Product Info → Distribution Channel → Plan Tabs (Coverage, Underwriting Data, System Data, Documents, Supporting Files)
+- **Form:** Product Info → Distribution Channel → Plan Tabs (Coverage, Underwriting Data, System Data, Documents, Supporting Files)
 - **Underwriting Data:** general info, material fact, cost component, deductible, discount, limit of liability, payment scheme, loss ratio
 - **System Data:** formula, validation, object transaction request/response
 - **Workflow:** WFProductConfig → WFApprovalProductConfig (via case-management)
-- **Tech:** Next.js, TypeScript, React Hook Form, Redux RTK Query, yup validation
