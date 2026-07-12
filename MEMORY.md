@@ -79,9 +79,10 @@ Skill opencode: asum-fe-convention, rtk-query-patterns, nextjs-app-router, fix-l
 
 ## 📌 ASUM Project Context
 
-- **Main repo (review PR & git ops):** `~/project/epics-portal`
+**WSL baru:** `nepku@LAPTOP-P1VQSPIQ` — SSH via `ssh -p 43211 -i ~/.ssh/vps-to-wsl nepku@jimmy.jagoankode.site`
+- **Main repo (review PR & git ops):** `~/project/review_pr/epics-portal-review`
+- **Coding / worktree:** `~/project/workspace/`
 - **Remote:** `ssh://git@code.ifg-life.id:7999/iaso/epics-portal.git`
-- **Worktree (coding/refactor):** `/var/www/html/project-asum/` — dari repo `epics-development`
 
 ### Tech Stack
 Next.js, TypeScript, React Hook Form, Redux RTK Query, yup, Tailwind, React Table, ESLint strict, scoped lint rules, pre-commit hook (lint + test coverage)
@@ -95,7 +96,7 @@ Next.js, TypeScript, React Hook Form, Redux RTK Query, yup, Tailwind, React Tabl
 - Event Handler: `onClick={handle}` not `onClick={() => handle()}`
 - Constants: `UPPER_SNAKE_CASE`; Boolean vars: `is/has/can/should` prefix; Arrays: plural
 - Test naming: `should + expected behavior`
-- Reusable utilities di `src/libs/utils/`, module-specific utils di module sendiri
+- Reusable utilities di `src/libs/utils/`, module-specific utilities di module sendiri
 
 ### Branch Convention
 - `development` → trunk
@@ -103,22 +104,19 @@ Next.js, TypeScript, React Hook Form, Redux RTK Query, yup, Tailwind, React Tabl
 - `fix/*|refactor/*|chore/*` → branch out dari salah satu `feature/*`
 - Cek base: `git merge-base <branch> <candidate-base>` + `git rev-list --count`
 
-### 🚫 Location Rules
-1. **Coding / refactor** → `/var/www/html/project-asum/` (worktree dari `epics-development`)
-2. **Review PR** → `~/project/epics-portal` (switch branch, **JANGAN** bikin worktree)
-3. **Worktree baru** — WAJIB tanya: branch name, path, base branch. Format: `worktree [type]/[IIAU-xxx-nama] → [base-branch]`
-4. **Jangan auto commit & push** — kerjain selesai → tunjukkin hasil → **TUNGGU INSTRUKSI**
-- **Worktree (coding/refactor):** Ada di **WSL** — VPS cuma tunnel via `nep@192.168.1.100` (atau host WSL terakhir)
-- **JANGAN cek worktree di VPS** — worktree hanya ada di WSL!
-- **Tech:** Next.js, TypeScript, React Hook Form, Redux RTK Query, yup, Tailwind, React Table, ESLint strict
-- **Rules:** Scoped lint rules, pre-commit hook (lint + test coverage), JSDoc required, private funcs `_` prefixed
+### 🚫 Location Rules — WSL Baru
+1. **Semua terkait ASUM** (coding, review PR, git ops, dll) → **di WSL baru**, bukan VPS!
+2. **Coding / refactor** → `~/project/workspace/` (worktree dari repo utama)
+3. **Review PR** → `~/project/review_pr/epics-portal-review` (switch branch, **JANGAN** bikin worktree)
+4. **VPS ini (`jimmy-vps`)** — gak kepake buat ASUM sama sekali
+5. **JANGAN cek path manapun di VPS** kalo soal ASUM
+6. **Worktree baru** — WAJIB tanya Bos dulu: branch name, path, base branch. Format: `worktree [type]/[IIAU-xxx-nama] → [base-branch]`
+7. **Jangan auto commit & push** — kerjain selesai → tunjukkin hasil → **TUNGGU INSTRUKSI**
 
-### 🚫 Location Rules — INGAT INI!
-
-1. **Semua terkait ASUM** (coding, review PR, git ops, dll) → **di WSL**, bukan VPS!
-2. **VPS ini (`jimmy-vps`)** — gak kepake buat ASUM sama sekali
-3. Review PR → juga di WSL, bukan di `~/project/epics-portal` VPS
-4. **JANGAN cek path manapun di VPS** kalo soal ASUM
+### Langkah Bikin Worktree
+1. `cat ~/project/workspace/.git` → cari main repo path
+2. `cd [MAIN-REPO]` → `git fetch origin [BASE-BRANCH]`
+3. `git worktree add -b [type/IIAU-xxx-nama] ~/project/workspace/[IIAU-xxx] origin/[base-branch]`
 
 
 
@@ -126,8 +124,8 @@ Next.js, TypeScript, React Hook Form, Redux RTK Query, yup, Tailwind, React Tabl
 
 **Goal:** `npm install -g autonomous-studio` langsung jalan tanpa user tau itu wrapper OpenClaw.
 
-**Project path (WSL):** `/home/nep/future/autonomous-studio`
-**SSH ke WSL:** `ssh -p 43210 -i ~/.ssh/vps-to-wsl nep@127.0.0.1`
+**Project path (WSL lama):** `/home/nep/future/autonomous-studio` — belum di-clone ke WSL baru
+**SSH ke WSL baru:** `ssh -p 43211 -i ~/.ssh/vps-to-wsl nepku@jimmy.jagoankode.site`
 
 ### Release Plan
 1. **Bundle OpenClaw sebagai npm dependency** di `package.json`
