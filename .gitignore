@@ -2,3 +2,9 @@
 *.swo
 *~
 .DS_Store
+login-auth-page/server/node_modules/
+node_modules/
+output/
+project/review-pr/
+rnd_result/
+package-lock.json
