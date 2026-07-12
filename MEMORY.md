@@ -1,6 +1,8 @@
 # MEMORY.md - Long-Term Memory
 
-## 🔍 Identity & Persona
+> Last consolidated: 2026-07-12 (memory consolidation cron)
+
+## 🧪 Identity & Persona
 
 - **Akun `default` (@jimmy_newtron_bot):** 🧪 Jimmy Neutron — bot Telegram utama
 - **Akun `velma`:** 🔍 Velma Dinkley — bot Telegram kedua
@@ -20,7 +22,7 @@
 1. **Diskusi & Planning** — breakdown kebutuhan, tanya-tanya, bikin PRD
 2. **Bikin PRD / Plan** — dokumen perencanaan sebelum eksekusi
 3. **PR Description** — generate sesuai template (English, lengkap)
-4. **Delegasi ke opencode agent `senior-frontend-next-asum`** — refactor besar/kecil & create new feature
+4. **Delegasi ke opencode agent `senior-frontend-next-asum`** — refactor & create new feature
 5. **PR Review** — switch branch, lint, typecheck, test, code convention → lapor markdown
 6. **Memory keeper** — semua progress dicatet
 
@@ -60,7 +62,7 @@ Alur kerja: **Diskusi → breakdown → plan → delegasi → review → generat
 
 ## 🔧 OpenCode CLI — Delegasi Tugas Berat
 
-**CLI:** `opencode` di `~/.opencode/bin/opencode`
+**CLI:** `opencode` di `~/.opencode/bin/opencode` (v1.17.7)
 **Agent ASUM:** `senior-frontend-next-asum` — Next.js, Redux/RTK Query, Tailwind, TypeScript, Jest
 **Alias dari Bos:** "pakai **fe-asum**" atau "**@fe-asum**"
 
@@ -170,37 +172,43 @@ Kalo Brillian minta list PR:
 - PR refs: `git ls-remote origin | grep "pull-requests"` (bukan `git branch -r`)
 - Branch name: `git branch -r --contains <sha>` → filter `pull-requests`
 
-## 🧪 Key Lesson: Sub-Agents buat Project Work
+## 🧪 Key Lessons
 
+### Sub-Agents buat Project Work
 Brillian nyaranin pake **sub-agents + skills** pas ngerjain project task. Gak usah everything in main thread — delegasi yang berat-berat.
 
-## 🧪 IIAU-778 Bug Quill Editor
-
-**Branch:** `fix/IIAU-778-bug-quil-editor` → `feature/components`
-**Worktree:** `/var/www/html/project-asum/IIAU-778-bug-quil-editor`
-**Status:** ⏳ Waiting for Brillian's confirmation to push (since June 29 — ~11 days)
-
-### 5 Issues Fixed
-- **Auto Page Break** — Deleted `useAutoPageBreak`, `_wrapOnChange`, `AUTO_PAGE_BREAK_PATTERN`
-- **Tab Key Lost After Reload** — Clipboard regex converts `\t` to space, fixed with custom Tab binding inserting `\u00a0×4`
-- **Dual Language Border** — `borderless-table` class lost in clipboard, fixed register `border-color` StyleAttributor + inline `border-color: transparent`
-- **Hierarchical Numbering** — CSS selectors scoped to wrapper but PDF preview HTML is bare, fixed JS pre-compute → `data-number` attr → `content: attr(data-number)`
-- **KaTeX Formula** — Not registered for PDF rendering, fixed with `import katex`, `window.katex=katex`, `katex.css.ts`
-
-### Key Learning
+### Quill Editor + PDF Preview (IIAU-778)
 CSS scoped to `.document-composer-quill-wrapper .ql-editor` **tidak** bekerja di PDF preview (HTML dikirim bare). CSS counters unreliable di PDF API → JS pre-compute + `data-number` attribute.
 
-Detail: [`memory/archive/2026-06-28.md`] → [`memory/archive/2026-06-29.md`]
+### PR Review Coverage
+Jangan cek ESLint source files doang. Wajib: ESLint source + ESLint test + TS typecheck (scoped) + Jest di scope module.
 
-## 🧪 Autonomous Studio Project (On Hold Since July 3)
+### New Session Flow
+Setelah **deliver hasil**: compact → tanya Bos Jarvis koreksi → kalo gak ada → **new session**
 
+## 🧪 Active Tasks
+
+### IIAU-778 Bug Quill Editor (⏳ Waiting ~13 days)
+- **Branch:** `fix/IIAU-778-bug-quil-editor` → `feature/components`
+- **Worktree:** `/var/www/html/project-asum/IIAU-778-bug-quil-editor`
+- **Status:** Belum di-push. Nunggu Brillian konfirmasi/approval.
+
+**5 Issues Fixed:**
+- **Auto Page Break** — Deleted `useAutoPageBreak`, `_wrapOnChange`, `AUTO_PAGE_BREAK_PATTERN`
+- **Tab Key Lost After Reload** — Custom Tab binding inserts `\u00a0×4`
+- **Dual Language Border** — register `border-color` StyleAttributor + inline `border-color: transparent`
+- **Hierarchical Numbering** — JS pre-compute → `data-number` attr → `content: attr(data-number)`
+- **KaTeX Formula** — `import katex`, `window.katex=katex`, `katex.css.ts`
+
+**Files modified:** `DocumentComposer.component.tsx`, `DocumentComposer.config.ts`, created `katex.css.ts`
+
+### Autonomous Studio (On Hold Since July 3)
 - **Path:** `/home/nep/project/autonomous-studio` → `src/jim.ts`
 - **Status:** Functional — OpenCode-style TUI, 6 commands (/personas, /generate, /chat, /workflow, /help, /exit), CLI args, state machine, menu overlay, scroll UI
 - **Run:** `npx tsx src/jim.ts` or globally `autonomous`
 - **TODO:** Visual polish, resize handling, /workflow placeholder
 
 ## 🧪 Portfolio Project
-
 - **Path:** `/home/nep/project/portofolio/index.html`
 - **GitHub:** https://github.com/jagoankode
 - **LinkedIn:** https://www.linkedin.com/in/brillian-andrie-nugroho-wiguno/
@@ -209,7 +217,6 @@ Detail: [`memory/archive/2026-06-28.md`] → [`memory/archive/2026-06-29.md`]
 - **Tech stack:** JS/TS, React, Next.js, Node.js, Go, Java, Swift, Kotlin, iOS/Android Native, Docker, Jenkins, Git, Tailwind, REST API, Microservices, AI/LLM, OpenClaw
 
 ## 🛠️ Workspace Skills
-
 | Skill | Dipake Kapan |
 |-------|-------------|
 | 🧭 context-scout | Sebelum modify code, cari context |
@@ -224,10 +231,6 @@ Detail: [`memory/archive/2026-06-28.md`] → [`memory/archive/2026-06-29.md`]
 | 📖 qmd | Nyari di local markdown docs |
 
 **Workflow coding:** vision-router → figma-screenshot-analyzer → context-scout → (ngoding/delegasi) → refactor-gate → error-triage → diff-guardian → handoff-summary
-
-## 🚨 New Session Flow
-
-Setelah **deliver hasil**: compact → tanya Bos Jarvis koreksi → kalo gak ada → **new session**
 
 ## 🚀 VPS Setup (jimmy-vps)
 
@@ -309,6 +312,7 @@ Setelah **deliver hasil**: compact → tanya Bos Jarvis koreksi → kalo gak ada
 - **Model:** deepseek-v4-pro (utama), deepseek-v4-flash (sub-agent)
 - **Juga ada:** Claude Code CLI v2.1.175
 - **Panggil:** `deepclaude -p "prompt"`
+- **Catatan:** Saat manggil untuk coding ASUM, WAJIB inject code convention dulu (`~/convention/code-convention.md`)
 
 ## 📦 ASUM Product Configuration Architecture
 - **2 layer:** `master-product-config/configuration` (change history + workflow) dan `product-configuration` (core create/edit)
