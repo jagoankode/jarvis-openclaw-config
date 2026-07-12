@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Auth — Flow Diagram</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#0f172a; color:#e2e8f0; padding:2rem; }
+h1 { text-align:center; margin-bottom:2rem; font-size:1.6rem; color:#38bdf8; }
+.diagram { max-width:800px; margin:0 auto; }
+
+.flow { display:flex; align-items:center; justify-content:center; gap:1rem; flex-wrap:wrap; margin-bottom:2rem; }
+.step { background:#1e293b; border:2px solid #334155; border-radius:12px; padding:1rem 1.2rem; text-align:center; min-width:130px; }
+.step-num { font-size:.65rem; color:#38bdf8; font-weight:700; letter-spacing:.1em; }
+.step-label { font-weight:600; font-size:.85rem; margin:.25rem 0; }
+.step-detail { font-size:.7rem; color:#64748b; }
+.step.active { border-color:#10b981; background:rgba(16,185,129,.08); }
+.step.error { border-color:#ef4444; background:rgba(239,68,68,.08); }
+.arrow { color:#475569; font-size:1.2rem; }
+
+.section { background:rgba(30,41,59,.8); border:1px solid #334155; border-radius:16px; padding:1.5rem; margin-bottom:1.5rem; }
+.section h3 { font-size:.9rem; color:#38bdf8; margin-bottom:1rem; border-bottom:1px solid #334155; padding-bottom:.5rem; }
+
+.security-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:.75rem; }
+.sec-item { background:#1e293b; border-radius:8px; padding:.75rem 1rem; border-left:3px solid #10b981; }
+.sec-item h4 { font-size:.8rem; margin-bottom:.2rem; }
+.sec-item p { font-size:.7rem; color:#64748b; }
+
+.token-box { display:flex; gap:1rem; flex-wrap:wrap; }
+.token-card { flex:1; min-width:250px; background:#1e293b; border-radius:10px; padding:1rem; }
+.token-card h4 { font-size:.8rem; color:#f59e0b; margin-bottom:.5rem; }
+.token-card .field { font-size:.75rem; margin:.2rem 0; }
+.token-card .field span { color:#64748b; }
+
+.decision { text-align:center; margin:1rem 0; }
+.decision q { display:block; color:#f59e0b; font-style:italic; margin-bottom:.5rem; font-size:.85rem; }
+.decision .paths { display:flex; justify-content:center; gap:2rem; }
+.path { padding:.5rem 1rem; border-radius:8px; font-size:.8rem; font-weight:600; }
+.path.yes { background:rgba(16,185,129,.15); color:#10b981; border:1px solid #10b981; }
+.path.no { background:rgba(239,68,68,.15); color:#ef4444; border:1px solid #ef4444; }
+</style>
+</head>
+<body>
+<h1>🔐 Login & Auth — Complete Flow</h1>
+
+<div class="diagram">
+
+<!-- Register Flow -->
+<div class="section">
+  <h3>📝 Register Flow</h3>
+  <div class="flow">
+    <div class="step">
+      <div class="step-num">STEP 1</div>
+      <div class="step-label">User Input</div>
+      <div class="step-detail">email + password + name</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step">
+      <div class="step-num">STEP 2</div>
+      <div class="step-label">Validation</div>
+      <div class="step-detail">format email, min 8 char</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step">
+      <div class="step-num">STEP 3</div>
+      <div class="step-label">Check Duplicate</div>
+      <div class="step-detail">SELECT email FROM users</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step active">
+      <div class="step-num">STEP 4</div>
+      <div class="step-label">Hash & Save</div>
+      <div class="step-detail">bcrypt 12 rounds</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step active">
+      <div class="step-num">STEP 5</div>
+      <div class="step-label">Generate Tokens</div>
+      <div class="step-detail">JWT sign + insert RT</div>
+    </div>
+  </div>
+</div>
+
+<!-- Login Flow -->
+<div class="section">
+  <h3>🔑 Login Flow</h3>
+  <div class="flow">
+    <div class="step">
+      <div class="step-num">STEP 1</div>
+      <div class="step-label">User Input</div>
+      <div class="step-detail">email + password</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step">
+      <div class="step-num">STEP 2</div>
+      <div class="step-label">Find User</div>
+      <div class="step-detail">SELECT * WHERE email=$1</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step">
+      <div class="step-num">STEP 3</div>
+      <div class="step-label">Compare Hash</div>
+      <div class="step-detail">bcrypt.compare()</div>
+    </div>
+  </div>
+  <div class="decision">
+    <q>Password match?</q>
+    <div class="paths">
+      <span class="path yes">✅ Match → Generate tokens → 200</span>
+      <span class="path no">❌ No match → 401 "Invalid email or password"</span>
+    </div>
+  </div>
+</div>
+
+<!-- Token Lifecycle -->
+<div class="section">
+  <h3>🔄 Token Lifecycle</h3>
+  <div class="token-box">
+    <div class="token-card">
+      <h4>🔑 Access Token</h4>
+      <div class="field"><span>Type:</span> JWT HS256</div>
+      <div class="field"><span>Expiry:</span> 7 hari</div>
+      <div class="field"><span>Storage:</span> Client localStorage</div>
+      <div class="field"><span>Server:</span> Stateless (tidak disimpan)</div>
+      <div class="field"><span>Digunakan:</span> Authorization header</div>
+    </div>
+    <div class="token-card">
+      <h4>🔄 Refresh Token</h4>
+      <div class="field"><span>Type:</span> JWT HS256</div>
+      <div class="field"><span>Expiry:</span> 30 hari</div>
+      <div class="field"><span>Storage:</span> Client localStorage + Server DB</div>
+      <div class="field"><span>Digunakan:</span> POST /auth/refresh</div>
+      <div class="field"><span>Rotation:</span> Dihapus & diganti setiap refresh</div>
+    </div>
+  </div>
+  <div class="flow" style="margin-top:1rem;">
+    <div class="step active">
+      <div class="step-label">Access Expired?</div>
+      <div class="step-detail">401 dari server</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step active">
+      <div class="step-label">Auto Refresh</div>
+      <div class="step-detail">POST /auth/refresh</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step active">
+      <div class="step-label">New Token Pair</div>
+      <div class="step-detail">Old RT deleted</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step">
+      <div class="step-label">Retry Request</div>
+      <div class="step-detail">With new access token</div>
+    </div>
+  </div>
+  <div class="decision" style="margin-top:1rem;">
+    <q>Refresh token juga expired?</q>
+    <div class="paths">
+      <span class="path no">→ Redirect ke login page</span>
+    </div>
+  </div>
+</div>
+
+<!-- Security -->
+<div class="section">
+  <h3>🛡️ Security Layers</h3>
+  <div class="security-grid">
+    <div class="sec-item">
+      <h4>bcrypt 12 rounds</h4>
+      <p>Password tidak pernah disimpan plaintext</p>
+    </div>
+    <div class="sec-item">
+      <h4>Rate Limiting</h4>
+      <p>20 req/15min — anti brute force</p>
+    </div>
+    <div class="sec-item">
+      <h4>Input Validation</h4>
+      <p>Semua input divalidasi + disanitasi</p>
+    </div>
+    <div class="sec-item">
+      <h4>Parametrized Queries</h4>
+      <p>$1, $2 — anti SQL injection</p>
+    </div>
+    <div class="sec-item">
+      <h4>Token Rotation</h4>
+      <p>Refresh token diganti setiap refresh</p>
+    </div>
+    <div class="sec-item">
+      <h4>Anti-Enumeration</h4>
+      <p>Pesan error sama untuk email salah / password salah</p>
+    </div>
+    <div class="sec-item">
+      <h4>Helmet Headers</h4>
+      <p>CSP, X-Frame-Options, HSTS</p>
+    </div>
+    <div class="sec-item">
+      <h4>HTTPS Only</h4>
+      <p>Production wajib HTTPS</p>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

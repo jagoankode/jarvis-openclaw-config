@@ -1,26 +1,45 @@
-# vision-router
+# vision-router — Image Routing & Model Selection
 
-Use this skill when the user provides an image, screenshot, UI mockup, browser screenshot, terminal screenshot, or error screenshot.
+Use when user provides an image, screenshot, UI mockup, browser screenshot, terminal screenshot, or error screenshot.
 
 ## Goal
 
-Decide how the image should be handled before coding.
+Classify image type → select cheapest adequate vision model → analyze → recommend next action.
 
-## Rules
+## Available Vision Models
 
-- If the image contains error text, use OCR-style extraction first.
-- If the image shows UI, describe layout, component structure, spacing, state, and possible implementation approach.
-- If the image shows a bug, identify the visible issue and map it to likely code areas.
-- If the image is a design reference, convert it into frontend implementation requirements.
-- Do not guess text that is unreadable.
-- Ask for a clearer screenshot only if the important content cannot be read.
-- Prefer concise visual analysis before editing code.
+| Model | Cost | Best For |
+|-------|------|----------|
+| 🆓 `mimo-v2-omni` | **$0** / $0 | Fast preview, simple UI screenshots, terminal errors, quick glance |
+| 💰 `mimo-v2.5` | $0.4 / $2 | Complex UI mockups, dense diagrams, multi-step visual analysis |
 
-## Output
+## Decision Matrix
 
-Provide:
-- image type
-- visible important details
-- extracted text if available
-- likely task category
-- recommended coding approach
+| Condition | Use Model | Why |
+|-----------|-----------|-----|
+| Simple error screenshot, short terminal output | `mimo-v2-omni` | Free, enough to read error text |
+| UI screenshot / mockup with few elements | `mimo-v2-omni` | Free, light analysis |
+| Dense UI with many components, nested layout | `mimo-v2.5` | Better at detail |
+| Figma design reference → frontend code | `mimo-v2.5` | Needs precision |
+| Multiple images, comparison | `mimo-v2.5` | Richer multimodal |
+| User says "detail", "jelas", "analisa dalam" | `mimo-v2.5` | Heavy task |
+
+Always default to **mimo-v2-omni ($0)** first. Upgrade to mimo-v2.5 only when the image is complex enough to warrant it.
+
+## Usage
+
+When analyzing an image, call the `image` tool with the `model` parameter:
+
+```
+image(image="<path_or_url>", model="opencode-go/mimo-v2-omni")
+```
+
+## Output Format
+
+```
+Image type: [error/UI mockup/bug/design reference/diagram]
+Model used: mimo-v2-omni / mimo-v2.5
+Extracted text: (if any)
+Detail: (2-3 bullet concise)
+Recommended action: (fix / implement / describe / ask clarification)
+```

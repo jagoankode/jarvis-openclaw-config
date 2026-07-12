@@ -6,14 +6,19 @@ description: "Streamlined ASUM PR review: bundle fetch, diff, convention, ESLint
 # asum-pr-review — ASUM PR Review Workflow
 
 ## Description
-Streamlined PR review workflow for ASUM `epics-portal`. Bundles remote fetch, diff analysis, convention check, ESLint, TypeScript typecheck, test coverage, and summary report into one efficient pipeline.
+Streamlined PR review workflow for ASUM `epics-portal`. Bundles remote fetch, diff analysis, convention check, ESLint, TypeScript typecheck, test coverage, and summary report.
+
+## Tools (WAJIB pakai ini, jangan exec manual)
+- **`review-pr` tool** — handles fetch → switch → lint → test → cleanup via WSL tunnel
+- Defined in `tools.profiles.json` profile `coding`
+- Falls back to SSH tunnel `wsl-exec` (nep@localhost:43210)
 
 ## Repository
 - Main repo: `~/project/epics-portal`
-- Worktree: `/var/www/html/project-asum/epics-development`
 - Remote: `ssh://git@code.ifg-life.id:7999/iaso/epics-portal.git`
+- **JANGAN akses repo langsung dari VPS** — semua operasi via WSL tunnel
 
-## Convention Rules (from TOOLS.md)
+## Convention Rules (from TOOLS.md & MEMORY.md)
 - Module Architecture: component/container/hook split
 - JSDoc mandatory on public funcs: `@param {Type} name - desc`
 - No `useState`/`useEffect` in `.component.tsx`
@@ -27,23 +32,25 @@ Streamlined PR review workflow for ASUM `epics-portal`. Bundles remote fetch, di
 ## Workflow
 
 ### Step 1: Identify Source & Target
-- `SOURCE`: PR/branch being reviewed
-- `TARGET`: Destination feature branch (e.g. `feature/components`, `feature/product-config`, etc.)
+- `SOURCE`: PR/branch being reviewed (e.g. `feat/IIAU-xxx-nama`)
+- `TARGET`: Destination feature branch (check merge-base from diff or convention)
 
-### Step 2: Remote Fetch (DO NOT SWITCH YET)
-```bash
-cd ~/project/epics-portal
-git fetch origin $SOURCE $TARGET
-```
+### Step 2: Run Review via Tool
+Use `review-pr <branch-name>` tool. It handles:
+- Fetch remote branches
+- Switch branch
+- ESLint
+- Jest tests
+- Cleanup (switch back to development, delete local branch)
 
-### Step 3: Get Remote Diff
-```bash
-git diff origin/$TARGET...origin/$SOURCE --stat
-git diff origin/$TARGET...origin/$SOURCE
-```
-- From remote refs, **not local branches**.
-- Do **NOT switch branches** yet.
-- Do **NOT auto-stash** — local changes are irrelevant for review.
+**Output the tool result.** If the tool returns output, read it.
+
+### Step 3: Manual Deep Checks (if needed)
+If `--deep` flag requested, also run via WSL:
+- **TypeScript typecheck**: `npx tsc --noEmit` (filter for changed files)
+- **Logic scan**: manually inspect diff for bugs, edge cases
+
+Use `wsl-exec` for any additional commands.
 
 ### Step 4: Convention Check
 Scan all changed files in diff for violations:
@@ -56,62 +63,34 @@ Scan all changed files in diff for violations:
 - Arrays not plural? ❌
 - Test not following `should + expected behavior`? ❌
 
-### Step 5: Run Tool Checks (Parallel via Sub-Agents)
-Use sub-agents for parallel execution:
-1. **ESLint** on changed files only (not full project):
-   ```bash
-   cd ~/project/epics-portal && git checkout $SOURCE && npx eslint $CHANGED_FILES --max-warnings 0
-   ```
-2. **TypeScript** typecheck (full project, filter output):
-   ```bash
-   cd ~/project/epics-portal && npx tsc --noEmit 2>&1 | head -50
-   ```
-3. **Tests** related to changed files:
-   ```bash
-   cd ~/project/epics-portal && npx jest --related $CHANGED_FILES --silent 2>&1
-   ```
+### Step 5: Save Report
+Save report to `~/project/review-pr/<branch-name>.md` before delivering to chat.
 
-**Priority skip**: If only `.style.ts` / `.config.ts` / non-logic files changed → skip ESLint/TS/Test entirely.
-
-### Step 6: Summary Report
-Format:
-```
-## 🔍 PR Review: <branch-name>
-
-**Target:** <target-branch>
-**Commits:** <commit-count>
-
-### 📝 Convention Check
-✅ / ⚠️ / ❌ per file
-
-### 🔧 ESLint
-✅ / ❌ (output or "skipped")
-
-### 🔷 TypeScript
-✅ / ❌ (output or "skipped")
-
-### 🧪 Tests
-✅ / ❌ (output or "skipped")
-
-### 💡 Notes
-- Notable findings, potential issues, suggestions
-```
-
-**`--deep` flag**: When caller adds `--deep`, also scan:
-- Logic bugs or edge cases
-- Performance concerns
-- Potential refactors
-- Specific improvement suggestions
+### Step 6: Deliver Summary
+Provide a concise summary:
+- Verdict: ✅ / ⚠️ / ❌
+- Key findings (max 3-5 bullets)
 
 ### Step 7: Cleanup
-```bash
-cd ~/project/epics-portal
-git checkout development
-git branch -D <local-branch> 2>/dev/null; true
-git checkout -- .  # discard any local changes
-```
+Review-pr tool already handles cleanup. Just confirm: `git switch development`, branch deleted.
 
-## Notes
-- Always cross-check skill output with raw diff before verdict.
-- False positives: JSDoc check on existing exports that only changed signature → flag as "⚠️ verify", not "❌ missing".
-- Never auto-stash. Discard local changes: `git checkout -- .`
+## 🔒 Guard Rules (Mencegah Double Delivery)
+1. **WAJIB pakai `review-pr` tool** — jangan exec SSH/wsl-exec langsung untuk review flow utama
+2. **Single delivery** — simpan report dulu ke file, baru deliver ke chat. **Sekali kirim.**
+3. **Skip jika duplikat** — kalo udah pernah deliver hasil untuk branch yang sama di sesi ini, jangan deliver lagi
+4. **Jangan reply ke error messages** dari OpenClaw runtime (exec timeout, etc) — abaikan saja
+5. **NO parallel sub-agents** untuk review — semua step jalan serial di thread utama
+
+## Report Format
+```
+## 📋 PR Review: <branch> → <target>
+
+### ✅ Branch & Git Hygiene
+### ✅ Code Convention
+### ✅ ESLint
+### ✅ TypeScript
+### ✅ Tests
+### ✅ Diff Assessment
+
+Verdict: ✅ / ⚠️ / ❌
+```

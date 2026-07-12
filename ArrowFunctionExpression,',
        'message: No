@@ -1,0 +1,4 @@
+Warning: Permanently added '[localhost]:43210' (ED25519) to the list of known hosts.
+  File "<stdin>", line 26
+    '},',
+IndentationError: unexpected indent

@@ -1,11 +1,16 @@
 # MEMORY.md - Long-Term Memory
 
-## 🧪 Identity & Persona
+## 🔍 Identity & Persona
 
-- **Nama:** Jimmy Neutron 🧪 — lab-grown chaos agent, degree in curiosity
+- **Akun `default` (@jimmy_newtron_bot):** 🧪 Jimmy Neutron — bot Telegram utama
+- **Akun `velma`:** 🔍 Velma Dinkley — bot Telegram kedua
+- **Multi-bot fleet:** Bos punya banyak bot Telegram (Jimmy, Velma, dan nanti akan bertambah)
+- **Pembagian tugas:**
+  - 🔍 **Velma (@velma_scoobydoo_bot)** → **Researcher** — riset teknologi, cari referensi, bikin report
+  - 🧪 **Jimmy (@jimmy_newtron_bot)** → **Implementator** — eksekusi teknis, coding, implementasi
 - **Panggilan Bos Jarvis:** Brillian Andrie Nugroho Wiguno
 - **Vibe:** Santai, witty, no-nonsense
-- **Tone WA ke orang lain (bukan Bos):** Sopan, profesional, panggil Kak/Kakak. Perkenalan: "Halo, Kak, saya Jimmy Neutron, asisten Brillian Andrie. Ada yang bisa saya bantu?"
+- **Tone WA ke orang lain (bukan Bos):** Sopan, profesional, panggil Kak/Kakak. Perkenalan: "Halo, Kak, saya Velma, asisten Brillian Andrie. Ada yang bisa saya bantu?"
 - **Kalo nanya kabar Bos:** "Alhamdulillah Brillian dalam keadaan baik, Kak. Ada yang bisa saya bantu?"
 - **Kalo nanya lokasi Bos:** Jangan langsung jawab. Konfirmasi dulu ke Bos Jarvis.
 - **Kontak WA Bos:** 081226012014
@@ -20,6 +25,38 @@
 6. **Memory keeper** — semua progress dicatet
 
 Alur kerja: **Diskusi → breakdown → plan → delegasi → review → generate PR description → tanya koreksi → new session**
+
+## 📏 Aturan Chat — 1 Instruksi = 1 Jawaban Singkat
+
+- **Jangan flood.** 1 instruksi Bos = 1 jawaban singkat.
+- Kalo perlu jelasin step panjang, lakukan terus **hapus chatnya** (edit/replace).
+- Jangan looping/fix messages kalau gak diminta.
+- **Quality over quantity.**
+
+## 📌 Convention & Code Organization
+
+**Location:** `~/convention/code-convention.md`
+**Scope:** ASUM FE — Next.js, TypeScript, Jest, Tailwind
+
+**Rules tersimpan di TOOLS.md:**
+- Module Architecture (component/container/hook split)
+- JSDoc mandatory on public funcs (`@param`, `@returns`)
+- No `useState`/`useEffect` in `.component.tsx`
+- Event Handler: `onClick={handle}` bukan `onClick={() => handle()}`
+- Private funcs: `_` prefix
+- Constants: `UPPER_SNAKE_CASE`
+- Boolean vars: `is`, `has`, `can`, `should` prefix
+- Arrays: plural form
+- Test naming: `should + expected behavior`
+
+### ⚠️ Variable naming WAJIB diingat:
+- **Destructuring event handler props**: `const { onClick: handleClick } = p;` — local variable pake `handle` prefix, bukan `on` prefix
+- **Event handler reference di JSX**: `onClick={handleClick}` — langsung pass reference, jangan inline arrow
+- **Private render functions**: dipanggil `{_renderXxx(params)}` bukan `<_renderXxx ... />`
+- **Boolean**: `is`, `has`, `can`, `should`
+- **Arrays**: plural (`users`, `products`)
+- **Constants**: `UPPER_SNAKE_CASE`
+- **Private**: `_` prefix
 
 ## 🔧 OpenCode CLI — Delegasi Tugas Berat
 
@@ -41,6 +78,7 @@ Skill opencode: asum-fe-convention, rtk-query-patterns, nextjs-app-router, fix-l
 
 - **Main repo (review PR & git ops):** `~/project/epics-portal`
 - **Remote:** `ssh://git@code.ifg-life.id:7999/iaso/epics-portal.git`
+<<<<<<< HEAD
 - **Worktree (coding/refactor):** `/var/www/html/project-asum/` — dari repo `epics-development`
 
 ### Tech Stack
@@ -68,6 +106,19 @@ Next.js, TypeScript, React Hook Form, Redux RTK Query, yup, Tailwind, React Tabl
 2. **Review PR** → `~/project/epics-portal` (switch branch, **JANGAN** bikin worktree)
 3. **Worktree baru** — WAJIB tanya: branch name, path, base branch. Format: `worktree [type]/[IIAU-xxx-nama] → [base-branch]`
 4. **Jangan auto commit & push** — kerjain selesai → tunjukkin hasil → **TUNGGU INSTRUKSI**
+=======
+- **Worktree (coding/refactor):** Ada di **WSL** — VPS cuma tunnel via `nep@192.168.1.100` (atau host WSL terakhir)
+- **JANGAN cek worktree di VPS** — worktree hanya ada di WSL!
+- **Tech:** Next.js, TypeScript, React Hook Form, Redux RTK Query, yup, Tailwind, React Table, ESLint strict
+- **Rules:** Scoped lint rules, pre-commit hook (lint + test coverage), JSDoc required, private funcs `_` prefixed
+
+### 🚫 Location Rules — INGAT INI!
+
+1. **Semua terkait ASUM** (coding, review PR, git ops, dll) → **di WSL**, bukan VPS!
+2. **VPS ini (`jimmy-vps`)** — gak kepake buat ASUM sama sekali
+3. Review PR → juga di WSL, bukan di `~/project/epics-portal` VPS
+4. **JANGAN cek path manapun di VPS** kalo soal ASUM
+>>>>>>> 0947359 (chore: weekly auto-sync [2026-07-12])
 
 ### Langkah Bikin Worktree
 1. `cat [existing-worktree]/.git` → cari main repo
@@ -153,7 +204,8 @@ Detail: [`memory/archive/2026-06-28.md`] → [`memory/archive/2026-06-29.md`]
 - **Path:** `/home/nep/project/portofolio/index.html`
 - **GitHub:** https://github.com/jagoankode
 - **LinkedIn:** https://www.linkedin.com/in/brillian-andrie-nugroho-wiguno/
-- **CV:** `/home/nep/project/portofolio/assets/pdf/Brillian-Andrie-CV.pdf`
+- **CV:** https://jagoankode.github.io/assets/pdf/Brillian-Andrie-CV.pdf (online)
+  - Backup path dulu: `/home/nep/project/portofolio/assets/pdf/Brillian-Andrie-CV.pdf`
 - **Tech stack:** JS/TS, React, Next.js, Node.js, Go, Java, Swift, Kotlin, iOS/Android Native, Docker, Jenkins, Git, Tailwind, REST API, Microservices, AI/LLM, OpenClaw
 
 ## 🛠️ Workspace Skills
@@ -179,6 +231,7 @@ Setelah **deliver hasil**: compact → tanya Bos Jarvis koreksi → kalo gak ada
 
 ## 🚀 VPS Setup (jimmy-vps)
 
+<<<<<<< HEAD
 ### Auto Tunnel WSL → VPS
 - **WSL → VPS:** Autossh reverse tunnel port 43210 → localhost:22
 - **Systemd:** `/etc/systemd/system/reverse-tunnel.service` + cron @reboot backup
@@ -201,6 +254,55 @@ Setelah **deliver hasil**: compact → tanya Bos Jarvis koreksi → kalo gak ada
 ### Git Backup
 - **Repo:** github.com/jagoankode/jarvis-openclaw-config — semua workspace + daily notes
 - **Restore:** clone ke `~/.openclaw/workspace`
+=======
+### VPS Setup (Jimmy-OpenClaw)
+- **IP:** 103.93.161.116
+- **User:** jimmy-bot
+- **SSH key:** ~/.ssh/jimmy-openclaw.pem
+- **SSH alias:** `jimmy-vps` (via ~/.ssh/config)
+- **OpenClaw:** v2026.6.11
+- **Model:** opencode-go/deepseek-v4-flash (primary)
+- **API key:** sk-cRj…ghoZ (opencode-go)
+- **Gateway:** port 18789, bind LAN
+- **Telegram (akun velma):** Velma Dinkley 🔍 — running via VPS
+- **Telegram (akun default):** @jimmy_newtron_bot Jimmy Neutron 🧪 — bot Telegram lama
+
+## 🔬 Tugas: Tech Research & Report (Velma)
+
+- **Mulai:** 6 Juli 2026
+- **Siklus:** Setiap 2 hari
+- **Sesi:** Mulai 00:00 hari-1 sampai 23:59 hari-2
+- **Report deadline:** 23:55 WIB di hari ke-2
+- **Folder:** `~/rnd_result/{YYYY-MM-DD}.md` (tanggal mulai sesi)
+- **Topik prioritas (rotate):** AI → Front End → Back End → Infra
+- **Delivery:** File detail + summary Telegram
+- **Otomatis via cron:** `velma-tech-research`
+
+### Git Backup
+- **Repo:** github.com/jagoankode/jarvis-openclaw-config
+- **Isi:** Semua workspace files + daily notes
+- **Cara restore:** git clone ke ~/.openclaw/workspace di mana aja
+- **Auto-sync:** cron job `weekly-sync-github-backup` — setiap Minggu 00:00 WIB
+>>>>>>> 0947359 (chore: weekly auto-sync [2026-07-12])
+
+## 🧪 Autonomous Studio — OpenClaw Wrapping Plan (Next Phase)
+
+**Goal:** `npm install -g autonomous-studio` langsung jalan tanpa user tau itu wrapper OpenClaw.
+
+**Project path (WSL):** `/home/nep/future/autonomous-studio`
+**SSH ke WSL:** `ssh -p 43210 -i ~/.ssh/vps-to-wsl nep@127.0.0.1`
+
+### Release Plan
+1. **Bundle OpenClaw sebagai npm dependency** di `package.json`
+2. **Spawn gateway lokal** sebagai child process (port random) pas `studio daemon start`
+3. **Refactor `gateway-client.ts` ke HTTP API** (`/v1/chat/completions`) — ganti SSH jadi `fetch()`
+4. **Config flexible**: `gatewayUrl` + `gatewayToken` — support VPS atau lokal
+
+### Status Sekarang
+- ✅ `emp list` — nampilin employee ID
+- ✅ `chat send -e <empId> -m "<msg>"` — kirim + dapet reply (via SSH ke VPS)
+- ✅ Parse reply dari `result.payloads[0].text`
+- ⏳ Next phase: refactor ke HTTP + spawn gateway lokal
 
 ## 🐍 DeepClaude Setup
 - **Path:** `~/.local/bin/deepclaude` | **Config:** `~/.config/deepclaude/config`

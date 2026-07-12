@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitoring Dashboard — Architecture Diagram</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#0f172a; color:#e2e8f0; padding:2rem; }
+h1 { text-align:center; margin-bottom:2rem; font-size:1.8rem; color:#38bdf8; }
+.diagram { max-width:1100px; margin:0 auto; }
+
+.layer { background:rgba(30,41,59,.8); border:1px solid #334155; border-radius:16px; padding:1.5rem; margin-bottom:1.5rem; }
+.layer-title { font-size:.8rem; text-transform:uppercase; letter-spacing:.15em; color:#64748b; margin-bottom:1rem; font-weight:700; }
+.layer-boxes { display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; }
+.box { background:#1e293b; border:1px solid #475569; border-radius:12px; padding:1.2rem 1.5rem; text-align:center; min-width:150px; flex:1; }
+.box-name { font-weight:700; font-size:.95rem; margin-bottom:.35rem; }
+.box-tech { font-size:.75rem; color:#64748b; }
+.box.highlight { border-color:#38bdf8; background:rgba(56,189,248,.08); }
+
+.arrow-down { text-align:center; color:#475569; font-size:1.5rem; margin:0 0 .5rem; }
+.arrow-label { font-size:.7rem; color:#64748b; margin-bottom:.5rem; text-align:center; }
+
+.data-flow { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:1.5rem; }
+.flow-step { text-align:center; padding:1rem; background:#1e293b; border-radius:8px; border-left:3px solid #38bdf8; }
+.flow-num { font-size:.7rem; color:#38bdf8; font-weight:700; }
+.flow-title { font-weight:600; margin:.25rem 0; font-size:.85rem; }
+.flow-latency { font-size:.7rem; color:#64748b; }
+
+.legend { display:flex; gap:2rem; justify-content:center; margin-top:2rem; font-size:.8rem; }
+.legend-item { display:flex; align-items:center; gap:.5rem; }
+.legend-dot { width:10px; height:10px; border-radius:50%; }
+.legend-dot.green { background:#10b981; }
+.legend-dot.blue { background:#38bdf8; }
+.legend-dot.yellow { background:#f59e0b; }
+.legend-dot.red { background:#ef4444; }
+</style>
+</head>
+<body>
+<h1>📊 Dashboard Monitoring — Architecture Overview</h1>
+
+<div class="diagram">
+
+<!-- Collection Layer -->
+<div class="layer">
+  <div class="layer-title">📡 Collection Layer — Poll Every 2s</div>
+  <div class="layer-boxes">
+    <div class="box">
+      <div class="box-name">🖥️ System Agent</div>
+      <div class="box-tech">cpu · mem · disk · net</div>
+    </div>
+    <div class="box">
+      <div class="box-name">🚀 App Agent</div>
+      <div class="box-tech">rps · errors · latency</div>
+    </div>
+    <div class="box">
+      <div class="box-name">🗄️ DB Agent</div>
+      <div class="box-tech">pool · queries · cache</div>
+    </div>
+    <div class="box">
+      <div class="box-name">💰 Biz Agent</div>
+      <div class="box-tech">orders · revenue · users</div>
+    </div>
+  </div>
+</div>
+
+<div class="arrow-down">▼</div>
+<div class="arrow-label">emit → Redis Pub/Sub channels</div>
+
+<!-- Streaming Layer -->
+<div class="layer">
+  <div class="layer-title">⚡ Streaming Layer</div>
+  <div class="layer-boxes">
+    <div class="box highlight">
+      <div class="box-name">Redis Pub/Sub + Streams</div>
+      <div class="box-tech">metrics:* · alerts:* · buffers</div>
+    </div>
+  </div>
+</div>
+
+<div class="arrow-down">▼ ▼ ▼</div>
+<div class="arrow-label">subscribe (parallel consumers)</div>
+
+<!-- Processing Layer -->
+<div class="layer">
+  <div class="layer-title">⚙️ Processing Layer</div>
+  <div class="layer-boxes">
+    <div class="box">
+      <div class="box-name">📊 Aggregator</div>
+      <div class="box-tech">10s / 1m / 5m windows</div>
+    </div>
+    <div class="box">
+      <div class="box-name">🚨 Alert Engine</div>
+      <div class="box-tech">threshold · cooldown · dedup</div>
+    </div>
+    <div class="box">
+      <div class="box-name">💾 Persistence Writer</div>
+      <div class="box-tech">batch → TimescaleDB</div>
+    </div>
+  </div>
+</div>
+
+<div class="arrow-down">▼ ▼</div>
+<div class="arrow-label">push (WebSocket) · query (REST) · persist</div>
+
+<!-- Storage & API Layer -->
+<div class="layer">
+  <div class="layer-title">🌐 API + Storage Layer</div>
+  <div class="layer-boxes">
+    <div class="box highlight">
+      <div class="box-name">Socket.IO Server</div>
+      <div class="box-tech">/live · /alerts · Redis adapter</div>
+    </div>
+    <div class="box">
+      <div class="box-name">REST API</div>
+      <div class="box-tech">/history · /snapshot · /rules</div>
+    </div>
+    <div class="box">
+      <div class="box-name">TimescaleDB</div>
+      <div class="box-tech">hypertable · 2h raw · 30d rollup</div>
+    </div>
+  </div>
+</div>
+
+<div class="arrow-down">▼</div>
+<div class="arrow-label">subscribe + render</div>
+
+<!-- Presentation Layer -->
+<div class="layer">
+  <div class="layer-title">🎨 Presentation Layer</div>
+  <div class="layer-boxes">
+    <div class="box highlight">
+      <div class="box-name">🖥️ System Panel</div>
+      <div class="box-tech">Gauges · CPU/Mem/Disk</div>
+    </div>
+    <div class="box highlight">
+      <div class="box-name">🚀 App Panel</div>
+      <div class="box-tech">Lines · RPS/Latency</div>
+    </div>
+    <div class="box highlight">
+      <div class="box-name">💰 Business Panel</div>
+      <div class="box-tech">Counters · Orders/Revenue</div>
+    </div>
+    <div class="box highlight">
+      <div class="box-name">🚨 Alerts Panel</div>
+      <div class="box-tech">List · Severity badges</div>
+    </div>
+  </div>
+</div>
+
+<!-- Data Flow Timeline -->
+<h3 style="margin:2rem 0 1rem;text-align:center;color:#38bdf8;">⏱️ End-to-End Latency Target: <1s</h3>
+<div class="data-flow">
+  <div class="flow-step">
+    <div class="flow-num">STEP 1</div>
+    <div class="flow-title">Agent Poll</div>
+    <div class="flow-latency">~10ms</div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">STEP 2</div>
+    <div class="flow-title">Redis Pub/Sub</div>
+    <div class="flow-latency">&lt;1ms</div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">STEP 3</div>
+    <div class="flow-title">Process & Push</div>
+    <div class="flow-latency">~5ms</div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">STEP 4</div>
+    <div class="flow-title">Browser Render</div>
+    <div class="flow-latency">~16ms (1 frame)</div>
+  </div>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot green"></span> Real-time path</div>
+  <div class="legend-item"><span class="legend-dot blue"></span> Historical path</div>
+  <div class="legend-item"><span class="legend-dot yellow"></span> Alert path</div>
+  <div class="legend-item"><span class="legend-dot red"></span> Alert threshold breached</div>
+</div>
+
+</div>
+</body>
+</html>

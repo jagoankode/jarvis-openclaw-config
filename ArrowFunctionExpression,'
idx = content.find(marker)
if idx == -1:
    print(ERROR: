@@ -1,0 +1,5 @@
+Warning: Permanently added '[localhost]:43210' (ED25519) to the list of known hosts.
+  File "<stdin>", line 4
+    marker = 'selector: Property[key.name=/^on[A-Z]/] marker not found)
+             ^
+SyntaxError: unterminated string literal (detected at line 4)

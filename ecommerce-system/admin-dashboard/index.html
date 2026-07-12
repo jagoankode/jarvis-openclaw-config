@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — TokoKita</title>
+<style>
+:root {
+  --primary: #4f46e5; --primary-dark: #4338ca;
+  --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+  --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+  --gray-300: #d1d5db; --gray-500: #6b7280; --gray-700: #374151;
+  --gray-900: #111827; --white: #fff;
+  --shadow: 0 1px 3px rgba(0,0,0,.1);
+  --sidebar-w: 240px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--gray-50); color:var(--gray-900); }
+
+.layout { display:flex; min-height:100vh; }
+.sidebar { width:var(--sidebar-w); background:var(--gray-900); color:var(--white); padding:1.5rem; position:fixed; top:0; left:0; bottom:0; overflow-y:auto; }
+.sidebar h2 { font-size:1.2rem; margin-bottom:2rem; }
+.sidebar h2 span { color:var(--primary); }
+.sidebar nav { display:flex; flex-direction:column; gap:.25rem; }
+.sidebar a, .sidebar button { display:block; padding:.7rem 1rem; color:var(--gray-300); text-decoration:none; border-radius:8px; font-size:.9rem; cursor:pointer; background:none; border:none; text-align:left; width:100%; transition:.2s; }
+.sidebar a:hover, .sidebar button:hover, .sidebar a.active { background:rgba(255,255,255,.08); color:var(--white); }
+.sidebar a.active { background:var(--primary); }
+
+.main { margin-left:var(--sidebar-w); flex:1; padding:2rem; }
+.header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; }
+.header h1 { font-size:1.5rem; }
+.user-bar { display:flex; align-items:center; gap:.75rem; font-size:.9rem; }
+.user-bar button { background:var(--white); border:1px solid var(--gray-200); padding:.5rem 1rem; border-radius:8px; cursor:pointer; }
+
+.stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-bottom:2rem; }
+.stat-card { background:var(--white); padding:1.5rem; border-radius:12px; box-shadow:var(--shadow); }
+.stat-label { font-size:.8rem; color:var(--gray-500); text-transform:uppercase; font-weight:600; }
+.stat-value { font-size:2rem; font-weight:800; margin-top:.25rem; }
+
+.card { background:var(--white); border-radius:12px; padding:1.5rem; box-shadow:var(--shadow); margin-bottom:1.5rem; }
+.card h3 { margin-bottom:1rem; font-size:1.1rem; }
+
+table { width:100%; border-collapse:collapse; font-size:.9rem; }
+th, td { padding:.75rem; text-align:left; border-bottom:1px solid var(--gray-100); }
+th { font-weight:600; color:var(--gray-500); font-size:.8rem; text-transform:uppercase; }
+tr:hover td { background:var(--gray-50); }
+
+.badge { padding:.2rem .6rem; border-radius:20px; font-size:.75rem; font-weight:600; }
+.badge-success { background:#d1fae5; color:#065f46; }
+.badge-warning { background:#fef3c7; color:#92400e; }
+.badge-danger { background:#fee2e2; color:#991b1b; }
+.badge-info { background:#dbeafe; color:#1e40af; }
+
+.btn { padding:.5rem 1rem; border-radius:8px; font-weight:600; font-size:.85rem; cursor:pointer; border:none; transition:.2s; }
+.btn-primary { background:var(--primary); color:var(--white); }
+.btn-primary:hover { background:var(--primary-dark); }
+.btn-outline { background:var(--white); color:var(--primary); border:2px solid var(--primary); }
+.btn-sm { padding:.3rem .7rem; font-size:.75rem; }
+.btn-danger { background:var(--danger); color:var(--white); }
+
+.form-group { margin-bottom:1rem; }
+.form-group label { display:block; font-size:.85rem; font-weight:600; margin-bottom:.25rem; }
+.form-group input, .form-group select, .form-group textarea { width:100%; padding:.6rem .75rem; border:2px solid var(--gray-200); border-radius:8px; font-size:.9rem; font-family:inherit; }
+.form-group input:focus, .form-group select:focus { outline:none; border-color:var(--primary); }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; align-items:center; justify-content:center; }
+.modal-overlay.active { display:flex; }
+.modal { background:var(--white); border-radius:16px; max-width:550px; width:90%; max-height:90vh; overflow-y:auto; padding:2rem; }
+.modal h3 { margin-bottom:1rem; }
+
+.toast { position:fixed; bottom:2rem; right:2rem; background:var(--gray-900); color:var(--white); padding:.75rem 1.5rem; border-radius:10px; z-index:2000; animation:slideUp .3s; }
+@keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+.empty { text-align:center; padding:3rem; color:var(--gray-500); }
+
+@media (max-width:768px) {
+  .sidebar { width:60px; padding:1rem .5rem; }
+  .sidebar h2, .sidebar a span, .sidebar button span { display:none; }
+  .sidebar a, .sidebar button { padding:.5rem; text-align:center; }
+  .main { margin-left:60px; }
+  .form-row { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <h2>🛒 <span>TokoKita</span></h2>
+  <nav>
+    <a href="#" class="active" onclick="showTab('dashboard',this)">📊 Dashboard</a>
+    <a href="#" onclick="showTab('products',this)">📦 Produk</a>
+    <a href="#" onclick="showTab('orders',this)">📋 Pesanan</a>
+  </nav>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <div class="header">
+    <h1 id="pageTitle">Dashboard</h1>
+    <div class="user-bar">
+      <span id="adminName">Admin</span>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+  <div id="tabContent"></div>
+</main>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<!-- Toast -->
+<div id="toastContainer"></div>
+
+<script>
+const API = 'http://localhost:3000/api';
+let token = localStorage.getItem('adminToken');
+
+function authFetch(url, opts={}) {
+  const headers = {'Content-Type':'application/json', ...opts.headers};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  return fetch(url, {...opts, headers});
+}
+
+function toast(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
+  c.appendChild(t); setTimeout(()=>t.remove(), 3000);
+}
+function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function fmt(n) { return Number(n).toLocaleString('id-ID'); }
+
+// ============================================================
+// AUTH
+// ============================================================
+async function login() {
+  const email = prompt('Admin Email:');
+  if (!email) return;
+  const pass = prompt('Password:');
+  if (!pass) return;
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email, password:pass})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+    if (data.data.user.role !== 'admin') throw new Error('Bukan akun admin!');
+    token = data.data.accessToken;
+    localStorage.setItem('adminToken', token);
+    document.getElementById('adminName').textContent = data.data.user.full_name;
+    showTab('dashboard');
+    toast('Login berhasil!');
+  } catch(e) { toast(e.message); }
+}
+
+function logout() {
+  token = null; localStorage.removeItem('adminToken');
+  document.getElementById('tabContent').innerHTML = `
+    <div class="card"><h3>🔐 Admin Login</h3>
+      <p style="margin-bottom:1rem;color:var(--gray-500);">Silakan login untuk mengakses dashboard admin.</p>
+      <button class="btn btn-primary" onclick="login()">Login</button>
+    </div>`;
+}
+
+// ============================================================
+// TABS
+// ============================================================
+async function showTab(tab, el) {
+  document.querySelectorAll('.sidebar a').forEach(a=>a.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('pageTitle').textContent = 
+    tab === 'dashboard' ? '📊 Dashboard' : tab === 'products' ? '📦 Manajemen Produk' : '📋 Manajemen Pesanan';
+  
+  if (!token && tab !== 'dashboard') { toast('Silakan login dulu!'); return logout(); }
+  
+  if (tab === 'dashboard') await renderDashboard();
+  else if (tab === 'products') await renderProducts();
+  else if (tab === 'orders') await renderOrders();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+async function renderDashboard() {
+  const c = document.getElementById('tabContent');
+  if (!token) { logout(); return; }
+  
+  try {
+    const [prodRes, orderRes] = await Promise.all([
+      authFetch(`${API}/products?limit=1`),
+      authFetch(`${API}/orders?limit=100`)
+    ]);
+    const products = await prodRes.json();
+    const orders = await orderRes.json();
+    const orderList = orders.data || [];
+    
+    const totalProducts = products.pagination?.total || 0;
+    const totalOrders = orderList.length;
+    const totalRevenue = orderList.filter(o=>o.status==='paid'||o.status==='delivered').reduce((s,o)=>s+Number(o.total_amount),0);
+    const pendingOrders = orderList.filter(o=>o.status==='pending').length;
+    
+    c.innerHTML = `
+      <div class="stats">
+        <div class="stat-card"><div class="stat-label">Total Produk</div><div class="stat-value">${totalProducts}</div></div>
+        <div class="stat-card"><div class="stat-label">Total Pesanan</div><div class="stat-value">${totalOrders}</div></div>
+        <div class="stat-card"><div class="stat-label">Pendapatan</div><div class="stat-value">Rp ${fmt(totalRevenue)}</div></div>
+        <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value">${pendingOrders}</div></div>
+      </div>
+      <div class="card">
+        <h3>Pesanan Terbaru</h3>
+        ${orderList.length === 0 ? '<div class="empty">Belum ada pesanan.</div>' : `
+        <table>
+          <thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Status</th><th>Tanggal</th></tr></thead>
+          <tbody>${orderList.slice(0,10).map(o => `
+            <tr>
+              <td><strong>#${o.order_number}</strong></td>
+              <td>${esc(o.customer_name||'-')}</td>
+              <td>Rp ${fmt(o.total_amount)}</td>
+              <td><span class="badge badge-${statusColor(o.status)}">${o.status}</span></td>
+              <td>${new Date(o.created_at).toLocaleDateString('id-ID')}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`}
+      </div>`;
+  } catch(e) {
+    c.innerHTML = '<div class="card"><div class="empty">Gagal memuat dashboard. Pastikan API berjalan.</div></div>';
+  }
+}
+
+function statusColor(s) {
+  const map = {pending:'warning',paid:'info',processing:'info',shipped:'info',delivered:'success',cancelled:'danger'};
+  return map[s] || 'warning';
+}
+
+// ============================================================
+// PRODUCTS
+// ============================================================
+async function renderProducts() {
+  const c = document.getElementById('tabContent');
+  try {
+    const res = await authFetch(`${API}/products?limit=100`);
+    const data = await res.json();
+    const products = data.data || [];
+    c.innerHTML = `
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <h3 style="margin:0">Daftar Produk (${data.pagination?.total||products.length})</h3>
+          <button class="btn btn-primary" onclick="showProductForm()">+ Tambah Produk</button>
+        </div>
+        ${products.length === 0 ? '<div class="empty">Belum ada produk.</div>' : `
+        <table>
+          <thead><tr><th>Nama</th><th>SKU</th><th>Kategori</th><th>Harga</th><th>Stok</th><th>Aksi</th></tr></thead>
+          <tbody>${products.map(p => `
+            <tr>
+              <td><strong>${esc(p.name)}</strong></td>
+              <td>${p.sku||'-'}</td>
+              <td>${esc(p.category_name||'-')}</td>
+              <td>Rp ${fmt(p.price)}</td>
+              <td>${p.stock}</td>
+              <td>
+                <button class="btn btn-outline btn-sm" onclick="showProductForm('${p.id}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}','${esc(p.name)}')">Hapus</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`}
+      </div>`;
+  } catch(e) {
+    c.innerHTML = '<div class="card"><div class="empty">Gagal memuat produk.</div></div>';
+  }
+}
+
+function showProductForm(id) {
+  const modal = document.getElementById('modalContent');
+  const isEdit = !!id;
+  
+  if (isEdit) {
+    fetch(`${API}/products/${id}`).then(r=>r.json()).then(d=>{
+      fillForm(d.data);
+    }).catch(()=>toast('Gagal memuat produk'));
+    modal.innerHTML = `<h3>✏️ Edit Produk</h3><div id="productForm">Loading...</div>`;
+  } else {
+    modal.innerHTML = `
+      <h3>➕ Tambah Produk Baru</h3>
+      <div id="productForm">
+        ${productFormHTML()}
+      </div>`;
+  }
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function fillForm(p) {
+  document.getElementById('productForm').innerHTML = productFormHTML(p);
+}
+
+function productFormHTML(p={}) {
+  return `
+    <div class="form-row">
+      <div class="form-group"><label>Nama Produk *</label><input id="pfName" value="${esc(p.name||'')}"></div>
+      <div class="form-group"><label>Slug *</label><input id="pfSlug" value="${esc(p.slug||'')}"></div>
+    </div>
+    <div class="form-group"><label>Deskripsi</label><textarea id="pfDesc" rows="3">${esc(p.description||'')}</textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Harga *</label><input type="number" id="pfPrice" value="${p.price||''}" min="0"></div>
+      <div class="form-group"><label>Harga Banding</label><input type="number" id="pfComparePrice" value="${p.compare_at_price||''}" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Stok</label><input type="number" id="pfStock" value="${p.stock||0}" min="0"></div>
+      <div class="form-group"><label>SKU</label><input id="pfSku" value="${esc(p.sku||'')}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Kategori ID</label><input id="pfCategory" value="${esc(p.category_id||'')}" placeholder="UUID kategori"></div>
+      <div class="form-group"><label>Gambar URL</label><input id="pfImage" value="${esc(p.image_url||'')}"></div>
+    </div>
+    <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+      <button class="btn btn-outline" onclick="closeModal()">Batal</button>
+      <button class="btn btn-primary" onclick="saveProduct('${p.id||''}')">${p.id?'Update':'Simpan'}</button>
+    </div>`;
+}
+
+async function saveProduct(id) {
+  const get = s => document.getElementById(s)?.value || '';
+  const body = {
+    name: get('pfName'), slug: get('pfSlug'), description: get('pfDesc'),
+    price: Number(get('pfPrice')), stock: Number(get('pfStock')),
+    sku: get('pfSku'), categoryId: get('pfCategory'), imageUrl: get('pfImage'),
+    compareAtPrice: get('pfComparePrice') ? Number(get('pfComparePrice')) : undefined,
+  };
+  
+  try {
+    const url = id ? `${API}/products/${id}` : `${API}/products`;
+    const method = id ? 'PUT' : 'POST';
+    const res = await authFetch(url, {method, body: JSON.stringify(body)});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+    toast(id ? 'Produk diupdate! ✅' : 'Produk dibuat! ✅');
+    closeModal();
+    renderProducts();
+  } catch(e) { toast(e.message); }
+}
+
+async function deleteProduct(id, name) {
+  if (!confirm(`Hapus "${name}"?`)) return;
+  try {
+    const res = await authFetch(`${API}/products/${id}`, {method:'DELETE'});
+    if (!res.ok) throw new Error((await res.json()).message);
+    toast('Produk dihapus ✅');
+    renderProducts();
+  } catch(e) { toast(e.message); }
+}
+
+// ============================================================
+// ORDERS
+// ============================================================
+async function renderOrders() {
+  const c = document.getElementById('tabContent');
+  try {
+    const res = await authFetch(`${API}/orders?limit=100`);
+    const data = await res.json();
+    const orders = data.data || [];
+    c.innerHTML = `
+      <div class="card">
+        <h3>Daftar Pesanan (${orders.length})</h3>
+        ${orders.length === 0 ? '<div class="empty">Belum ada pesanan.</div>' : `
+        <table>
+          <thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Status</th><th>Tanggal</th><th>Aksi</th></tr></thead>
+          <tbody>${orders.map(o => `
+            <tr>
+              <td><strong>#${o.order_number}</strong></td>
+              <td>${esc(o.customer_name||'-')}<br><small style="color:var(--gray-500)">${esc(o.customer_email||'')}</small></td>
+              <td>Rp ${fmt(o.total_amount)}</td>
+              <td>
+                <select onchange="updateStatus('${o.id}','${o.status}',this.value)" style="padding:.2rem;border-radius:6px;border:1px solid var(--gray-300);">
+                  <option ${o.status==='pending'?'selected':''}>pending</option>
+                  <option ${o.status==='paid'?'selected':''}>paid</option>
+                  <option ${o.status==='processing'?'selected':''}>processing</option>
+                  <option ${o.status==='shipped'?'selected':''}>shipped</option>
+                  <option ${o.status==='delivered'?'selected':''}>delivered</option>
+                  <option ${o.status==='cancelled'?'selected':''}>cancelled</option>
+                </select>
+              </td>
+              <td>${new Date(o.created_at).toLocaleDateString('id-ID')}</td>
+              <td><button class="btn btn-outline btn-sm" onclick="viewOrder('${o.id}')">Detail</button></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`}
+      </div>`;
+  } catch(e) {
+    c.innerHTML = '<div class="card"><div class="empty">Gagal memuat pesanan.</div></div>';
+  }
+}
+
+async function updateStatus(orderId, oldStatus, newStatus) {
+  if (oldStatus === newStatus) return;
+  if (!confirm(`Ubah status dari "${oldStatus}" ke "${newStatus}"?`)) { renderOrders(); return; }
+  try {
+    const res = await authFetch(`${API}/orders/${orderId}/status`, {
+      method:'PUT', body: JSON.stringify({status: newStatus})
+    });
+    if (!res.ok) throw new Error((await res.json()).message);
+    toast(`Status diupdate ke "${newStatus}" ✅`);
+  } catch(e) { toast(e.message); }
+  renderOrders();
+}
+
+async function viewOrder(id) {
+  try {
+    const res = await authFetch(`${API}/orders/${id}`);
+    const data = await res.json();
+    const o = data.data;
+    document.getElementById('modalContent').innerHTML = `
+      <h3>📋 Order #${o.order_number}</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+        <div><strong>Status:</strong> <span class="badge badge-${statusColor(o.status)}">${o.status}</span></div>
+        <div><strong>Tanggal:</strong> ${new Date(o.created_at).toLocaleString('id-ID')}</div>
+        <div><strong>Subtotal:</strong> Rp ${fmt(o.subtotal)}</div>
+        <div><strong>Shipping:</strong> Rp ${fmt(o.shipping_cost)}</div>
+        <div><strong>Tax:</strong> Rp ${fmt(o.tax_amount)}</div>
+        <div><strong>Total:</strong> <span style="font-size:1.1rem;font-weight:700;color:var(--primary);">Rp ${fmt(o.total_amount)}</span></div>
+      </div>
+      <h4 style="margin-bottom:.5rem;">Items</h4>
+      <table>
+        <thead><tr><th>Produk</th><th>Harga</th><th>Qty</th><th>Subtotal</th></tr></thead>
+        <tbody>${(o.items||[]).map(i => `
+          <tr><td>${esc(i.product_name)}</td><td>Rp ${fmt(i.product_price)}</td><td>${i.quantity}</td><td>Rp ${fmt(i.subtotal)}</td></tr>`).join('')}
+        </tbody>
+      </table>
+      <div style="text-align:right;margin-top:1rem;">
+        <button class="btn btn-outline" onclick="closeModal()">Tutup</button>
+      </div>`;
+    document.getElementById('modalOverlay').classList.add('active');
+  } catch(e) { toast(e.message); }
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+}
+
+// INIT
+if (token) {
+  document.getElementById('adminName').textContent = 'Admin';
+  showTab('dashboard');
+} else {
+  logout();
+}
+</script>
+</body>
+</html>
