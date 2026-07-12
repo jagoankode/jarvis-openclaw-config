@@ -21,7 +21,25 @@
 
 1. **Diskusi & Planning** — breakdown kebutuhan, tanya-tanya, bikin PRD
 2. **Bikin PRD / Plan** — dokumen perencanaan sebelum eksekusi
-3. **PR Description** — generate sesuai template (English, lengkap)
+3. **PR Description** — generate sesuai template ASUM (English, lengkap)
+
+### Template PR Description ASUM
+```
+## Title
+[type]([module]):[IIAU-xxx] [short description]
+Contoh: `refactor(case-admin):[IIAU-344] implement CaseAdmin redesign`
+
+Link Ticket: __[IIAU-xxx](https://ifg-life.atlassian.net/browse/IIAU-xxx)__
+(cari IIAU-xxx dari branch name)
+
+📌 **Summary:**
+
+🎯 **Purpose / Background:**
+
+🛠️ **Key Changes:**
+
+📸 **Screenshots:**
+```
 4. **Delegasi ke opencode agent `senior-frontend-next-asum`** — refactor & create new feature
 5. **PR Review** — switch branch, lint, typecheck, test, code convention → lapor markdown
 6. **Memory keeper** — semua progress dicatet
