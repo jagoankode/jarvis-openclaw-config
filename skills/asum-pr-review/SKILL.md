@@ -55,31 +55,43 @@ Use `review-pr <branch-name>` tool. It handles:
 
 **Output the tool result.** If the tool returns output, read it.
 
-### Step 3: Primary Gates — ESLint, TypeScript, Jest
-**Harus dicek dan dilapor duluan sebelum ngapa-ngapain.**
+### 🚦 Alur Review (Gate System)
 
-#### 3a. ESLint
-`review-pr` tool handles this. Check output:
-- ✅ 0 errors → lanjut
-- ❌ Ada error → catat per-file, **Verdict ❌ langsung**
+```
+START → Cek ESLint → ❌ STOP & LAPOR
+      ✅ → Cek TypeScript → ❌ STOP & LAPOR
+                        ✅ → Cek Jest → ❌ STOP & LAPOR
+                                     ✅ → Cek Convention → ✅ SELESAI
+```
 
-#### 3b. TypeScript
-Jalanin `npx tsc --noEmit` via WSL:
-- ✅ Lulus → lanjut
-- ❌ Type errors → catat, **Verdict ❌ langsung**
+---
 
-#### 3c. Jest
-`review-pr` tool handles this. Check:
-- ✅ All tests pass, coverage ≥ 70% → lanjut
-- ❌ Ada fail atau coverage < 70% → catat, **Verdict ❌ langsung**
+### Step 3: Cek ESLint
+Cek hasil dari `review-pr` tool.
+- ✅ **0 errors** → lanjut ke Step 4
+- ❌ **Ada error** → catat per-file, **LANGSUNG STOP**. Laporkan verdict ❌. Jangan lanjut ke step berikutnya.
 
-> Jika 3a/3b/3c gagal → skip Step 4, langsung lapor ❌
+---
 
-### Step 4: Code Convention Check (Secondary Gate)
-Hanya dilakukan jika Primary Gates (ESLint/TS/Jest) lolos.
+### Step 4: Cek TypeScript
+Jalanin `npx tsc --noEmit` via WSL.
+- ✅ **Lulus** → lanjut ke Step 5
+- ❌ **Ada type errors** → catat, **LANGSUNG STOP**. Laporkan verdict ❌. Jangan lanjut.
+
+---
+
+### Step 5: Cek Jest / Unit Test
+Cek hasil dari `review-pr` tool.
+- ✅ **All test pass + coverage ≥ 70%** → lanjut ke Step 6
+- ❌ **Ada fail ATAU coverage < 70%** → catat, **LANGSUNG STOP**. Laporkan verdict ❌. Jangan lanjut.
+
+---
+
+### Step 6: Cek Code Convention (Final Gate)
+Hanya dijalankan kalo ESLint ✅ → TS ✅ → Jest ✅.
 
 Scan all changed files in diff for violations:
-- **Types di luar `.type.ts` / `.types.ts`?** ❌ — ini paling sering dilanggar!
+- **Types/Interfaces di luar `.type.ts` / `.types.ts`?** ❌ — ini paling sering dilanggar!
 - New exports missing JSDoc? Cross-check with existing code — if it's an existing export with changed signature, flag as "⚠️ verify" not "❌ missing"
 - `useState`/`useEffect` in `.component.tsx`? ❌
 - Inline arrow handlers `onClick={() => handle()}` instead of `onClick={handle}`? ❌
@@ -89,15 +101,38 @@ Scan all changed files in diff for violations:
 - Arrays not plural? ❌
 - Test not following `should + expected behavior`? ❌
 
-### Step 5: Save Report
-Save report to `~/project/report-review/<branch-name>.md` before delivering to chat.
+### Step 7: Save Report
+Save report to `~/project/report-review/<branch-name>.md` sebelum deliver ke chat.
 
-### Step 6: Deliver Summary
-Provide a concise summary:
-- Verdict: ✅ / ⚠️ / ❌
-- Key findings (max 3-5 bullets)
+### Step 8: Deliver Summary ke Chat
+Kirim hasil review lengkap:
 
-### Step 7: Cleanup
+**Jika STOP di tengah (❌):**
+```
+## 📋 PR Review: <branch> → <target>
+
+❌ **STOP di [ESLint/TypeScript/Jest]** — tidak lanjut ke tahap berikutnya.
+
+## Errors:
+... (detail error)
+
+Verdict: ❌
+```
+
+**Jika lolos semua (✅):**
+```
+## 📋 PR Review: <branch> → <target>
+
+### 1️⃣ ESLint       ✅
+### 2️⃣ TypeScript   ✅
+### 3️⃣ Jest         ✅
+### 4️⃣ Convention   ✅
+### 5️⃣ Diff Assessment
+
+Verdict: ✅
+```
+
+### Step 9: Cleanup
 Review-pr tool already handles cleanup. Just confirm: `git switch development`, branch deleted.
 
 ## 🔒 Guard Rules (Mencegah Double Delivery)
