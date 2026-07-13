@@ -20,6 +20,7 @@ Streamlined PR review workflow for ASUM `epics-portal`. Bundles remote fetch, di
 
 ## Convention Rules (from TOOLS.md & MEMORY.md)
 - Module Architecture: component/container/hook split
+- Types/Interfaces wajib di `.type.ts` atau `.types.ts` — **tidak boleh** di `.component.tsx`, `.container.tsx`, atau file lain ❌
 - JSDoc mandatory on public funcs: `@param {Type} name - desc`
 - No `useState`/`useEffect` in `.component.tsx`
 - Event Handler: `onClick={handle}` not `onClick={() => handle()}`
@@ -28,6 +29,15 @@ Streamlined PR review workflow for ASUM `epics-portal`. Bundles remote fetch, di
 - Boolean vars: `is`, `has`, `can`, `should` prefix
 - Arrays: plural form
 - Test naming: `should + expected behavior`
+
+## 🎯 Priority Check Order
+### 🥇 Primary Gates (FAIL = ❌ otomatis, no-go)
+1. **ESLint** — wajib 0 error
+2. **TypeScript** — wajib `tsc --noEmit` lulus
+3. **Jest** — wajib semua test pass, coverage ≥ 70%
+
+### 🥈 Secondary Gates
+4. **Code Convention** — dilanjutin cek kalo primary gates lolos
 
 ## Workflow
 
@@ -45,15 +55,31 @@ Use `review-pr <branch-name>` tool. It handles:
 
 **Output the tool result.** If the tool returns output, read it.
 
-### Step 3: Manual Deep Checks (if needed)
-If `--deep` flag requested, also run via WSL:
-- **TypeScript typecheck**: `npx tsc --noEmit` (filter for changed files)
-- **Logic scan**: manually inspect diff for bugs, edge cases
+### Step 3: Primary Gates — ESLint, TypeScript, Jest
+**Harus dicek dan dilapor duluan sebelum ngapa-ngapain.**
 
-Use `wsl-exec` for any additional commands.
+#### 3a. ESLint
+`review-pr` tool handles this. Check output:
+- ✅ 0 errors → lanjut
+- ❌ Ada error → catat per-file, **Verdict ❌ langsung**
 
-### Step 4: Convention Check
+#### 3b. TypeScript
+Jalanin `npx tsc --noEmit` via WSL:
+- ✅ Lulus → lanjut
+- ❌ Type errors → catat, **Verdict ❌ langsung**
+
+#### 3c. Jest
+`review-pr` tool handles this. Check:
+- ✅ All tests pass, coverage ≥ 70% → lanjut
+- ❌ Ada fail atau coverage < 70% → catat, **Verdict ❌ langsung**
+
+> Jika 3a/3b/3c gagal → skip Step 4, langsung lapor ❌
+
+### Step 4: Code Convention Check (Secondary Gate)
+Hanya dilakukan jika Primary Gates (ESLint/TS/Jest) lolos.
+
 Scan all changed files in diff for violations:
+- **Types di luar `.type.ts` / `.types.ts`?** ❌ — ini paling sering dilanggar!
 - New exports missing JSDoc? Cross-check with existing code — if it's an existing export with changed signature, flag as "⚠️ verify" not "❌ missing"
 - `useState`/`useEffect` in `.component.tsx`? ❌
 - Inline arrow handlers `onClick={() => handle()}` instead of `onClick={handle}`? ❌
@@ -85,12 +111,30 @@ Review-pr tool already handles cleanup. Just confirm: `git switch development`, 
 ```
 ## 📋 PR Review: <branch> → <target>
 
-### ✅ Branch & Git Hygiene
-### ✅ Code Convention
-### ✅ ESLint
-### ✅ TypeScript
-### ✅ Tests
-### ✅ Diff Assessment
+### 1️⃣ ESLint
+- Status: ✅ / ❌
+- Errors: ... per-file
 
-Verdict: ✅ / ⚠️ / ❌
+### 2️⃣ TypeScript
+- Status: ✅ / ❌
+- Errors: ...
+
+### 3️⃣ Tests
+- Status: ✅ / ❌
+- Coverage: ...
+- Pass/Fail: ...
+
+### 4️⃣ Code Convention
+- Types placement: ✅ / ❌
+- Hooks: ✅ / ❌
+- Event handlers: ✅ / ❌
+- Naming: ✅ / ❌
+
+### 5️⃣ Branch & Git Hygiene
+### 6️⃣ Diff Assessment
+
+---
+**Verdict:** ✅ / ⚠️ / ❌
 ```
+
+> ⚠️ **Prioritas:** ESLint > TypeScript > Jest > Convention. Gagal di 1-3 → ❌ langsung.
