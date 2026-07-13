@@ -101,20 +101,42 @@ Scan all changed files in diff for violations:
 - Arrays not plural? ❌
 - Test not following `should + expected behavior`? ❌
 
-### Step 7: Save Report
-Save report to `~/project/report-review/<branch-name>.md` sebelum deliver ke chat.
+### Step 7: Potensi Bug, Battle Next & Suggestions
+Scan diff secara manual untuk mencari:
 
-### Step 8: Deliver Summary ke Chat
-Kirim hasil review lengkap:
+**🔴 Potensi Bug:**
+- Logic error / off-by-one / null safety?
+- Edge cases gak ditangani? (empty state, loading, error)
+- Async race condition? (misal concurrent API calls tanpa AbortController)
+- State update setelah component unmount?
+- Props destructuring typo atau missing fallback?
+
+**⚠️ Battle Next / Warnings:**
+- Kode yg bakal bermasalah kalo scale (n+1 query, nested loop besar)
+- Redux cache strategy kurang tepat?
+- Performance red flags (re-render berlebihan, heavy computation di render)
+- Dependency yg gak stabil atau deprecated
+
+**💡 Suggestions & Solutions:**
+- Tiap masalah dikasih **saran konkret** — bukan cuma nunjukin error, tapi kasih solusi: kode sebelum & sesudah, link referensi, atau pattern yg lebih baik
+- Format: `- [severity: tinggi/sedang/rendah] Judul → saran fix`
+
+---
+
+### Step 8: Save Report
+Save report ke `~/project/report-review/<branch-name>.md` sebelum deliver ke chat.
+
+### Step 9: Deliver Summary ke Chat
+Kirim hasil review lengkap.
 
 **Jika STOP di tengah (❌):**
 ```
 ## 📋 PR Review: <branch> → <target>
 
-❌ **STOP di [ESLint/TypeScript/Jest]** — tidak lanjut ke tahap berikutnya.
+❌ **STOP di [ESLint/TypeScript/Jest]** — tidak lanjut.
 
 ## Errors:
-... (detail error)
+...(detail)
 
 Verdict: ❌
 ```
@@ -123,16 +145,25 @@ Verdict: ❌
 ```
 ## 📋 PR Review: <branch> → <target>
 
-### 1️⃣ ESLint       ✅
-### 2️⃣ TypeScript   ✅
-### 3️⃣ Jest         ✅
-### 4️⃣ Convention   ✅
-### 5️⃣ Diff Assessment
+### 1️⃣ ESLint           ✅
+### 2️⃣ TypeScript       ✅
+### 3️⃣ Jest             ✅ (coverage: xx%)
+### 4️⃣ Convention       ✅ / ⚠️
+### 5️⃣ Bug & Saran      
+### 6️⃣ Diff Assessment
 
-Verdict: ✅
+---
+**Verdict:** ✅ / ⚠️ / ❌
+
+---
+🔍 **Potensi Bug:**
+- [tinggi/sedang/rendah] Deskripsi → saran fix
+
+💡 **Suggestion:**
+- Detail improvement
 ```
 
-### Step 9: Cleanup
+### Step 10: Cleanup
 Review-pr tool already handles cleanup. Just confirm: `git switch development`, branch deleted.
 
 ## 🔒 Guard Rules (Mencegah Double Delivery)
@@ -143,33 +174,36 @@ Review-pr tool already handles cleanup. Just confirm: `git switch development`, 
 5. **NO parallel sub-agents** untuk review — semua step jalan serial di thread utama
 
 ## Report Format
+
+### Format STOP (❌)
 ```
 ## 📋 PR Review: <branch> → <target>
 
-### 1️⃣ ESLint
-- Status: ✅ / ❌
-- Errors: ... per-file
+❌ **STOP di [ESLint/TypeScript/Jest]** — tidak lanjut.
 
-### 2️⃣ TypeScript
-- Status: ✅ / ❌
-- Errors: ...
+## Errors:
+- file.ts:xx - error message
 
-### 3️⃣ Tests
-- Status: ✅ / ❌
-- Coverage: ...
-- Pass/Fail: ...
-
-### 4️⃣ Code Convention
-- Types placement: ✅ / ❌
-- Hooks: ✅ / ❌
-- Event handlers: ✅ / ❌
-- Naming: ✅ / ❌
-
-### 5️⃣ Branch & Git Hygiene
-### 6️⃣ Diff Assessment
-
----
-**Verdict:** ✅ / ⚠️ / ❌
+Verdict: ❌
 ```
 
-> ⚠️ **Prioritas:** ESLint > TypeScript > Jest > Convention. Gagal di 1-3 → ❌ langsung.
+### Format Lolos (✅)
+```
+## 📋 PR Review: <branch> → <target>
+
+### 1️⃣ ESLint           ✅
+### 2️⃣ TypeScript       ✅
+### 3️⃣ Jest             ✅ (coverage: xx%)
+### 4️⃣ Convention       ✅ / ⚠️
+
+---
+🔍 **Potensi Bug:**
+- [tinggi] deskripsi → saran fix
+- [sedang] deskripsi → saran fix
+
+💡 **Suggestion:**
+- improvement detail
+
+---
+**Verdict:** ✅  |  ⚠️ Merge with notes  |  ❌ Reject
+```
