@@ -1,0 +1,409 @@
+{
+  "id": "epics-portal-gi",
+  "realm": "epics-portal-gi",
+  "displayName": "Epics Portal GI (Development)",
+  "displayNameHtml": "Epics Portal GI",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": false,
+  "accessTokenLifespan": 300,
+  "accessTokenLifespanForImplicitFlow": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "ssoSessionIdleTimeoutRememberMe": 0,
+  "ssoSessionMaxLifespanRememberMe": 0,
+  "offlineSessionIdleTimeout": 2592000,
+  "offlineSessionMaxLifespan": 5184000,
+  "clientSessionIdleTimeout": 0,
+  "clientSessionMaxLifespan": 0,
+  "clientOfflineSessionIdleTimeout": 0,
+  "clientOfflineSessionMaxLifespan": 0,
+  "accessCodeLifespan": 60,
+  "accessCodeLifespanUserAction": 300,
+  "accessCodeLifespanLogin": 1800,
+  "actionTokenGeneratedByAdminLifespan": 43200,
+  "actionTokenGeneratedByUserLifespan": 300,
+  "revokeRefreshToken": false,
+  "refreshTokenMaxReuse": 0,
+  "offlineSessionMaxLifespanEnabled": false,
+
+  "clients": [
+    {
+      "clientId": "web-gi",
+      "name": "Web GI — Frontend",
+      "description": "ASUM Frontend — Next.js App",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "authorizationServicesEnabled": false,
+      "alwaysDisplayInConsole": false,
+      "rootUrl": "http://localhost:3000",
+      "baseUrl": "/",
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"],
+      "secret": "****GANTI-DENGAN-CLIENT-SECRET-ASLI-ATAU-RANDOM****",
+      "defaultRoles": [],
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:3000/*",
+        "pkce.code.challenge.method": "S256"
+      },
+      "protocolMappers": [
+        {
+          "name": "audience-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "web-gi",
+            "id.token.claim": "true",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "foo",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "realm_access.roles",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "client roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-client-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "foo",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "resource_access.${client_id}.roles",
+            "jsonType.label": "String",
+            "multivalued": ""
+          }
+        },
+        {
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "consentRequired": false,
+          "config": {
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "groups",
+            "jsonType.label": "String",
+            "multivalued": ""
+          }
+        }
+      ]
+    }
+  ],
+
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrator — full access",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "epics-portal-gi"
+      },
+      {
+        "name": "user",
+        "description": "Regular user — standard access",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "epics-portal-gi"
+      },
+      {
+        "name": "approver",
+        "description": "Approver — can approve workflows",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "epics-portal-gi"
+      },
+      {
+        "name": "case-manager",
+        "description": "Case manager — manage cases",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "epics-portal-gi"
+      },
+      {
+        "name": "viewer",
+        "description": "Read-only access",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "epics-portal-gi"
+      },
+      {
+        "name": "product-configurator",
+        "description": "Can configure products",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "epics-portal-gi"
+      },
+      {
+        "name": "offline_access",
+        "description": "Offline access",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "epics-portal-gi"
+      },
+      {
+        "name": "uma_authorization",
+        "description": "UMA authorization",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "epics-portal-gi"
+      }
+    ],
+    "client": {
+      "web-gi": [
+        {
+          "name": "read",
+          "description": "Read access",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "web-gi"
+        },
+        {
+          "name": "write",
+          "description": "Write access",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "web-gi"
+        }
+      ]
+    }
+  },
+
+  "groups": [
+    {
+      "name": "IT Team",
+      "path": "/IT Team",
+      "attributes": {}
+    },
+    {
+      "name": "Business Team",
+      "path": "/Business Team",
+      "attributes": {}
+    },
+    {
+      "name": "Approver Team",
+      "path": "/Approver Team",
+      "attributes": {}
+    }
+  ],
+
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@epics-portal.dev",
+      "firstName": "Admin",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin", "user", "product-configurator", "case-manager", "approver"],
+      "clientRoles": {
+        "web-gi": ["read", "write"]
+      },
+      "groups": ["/IT Team"]
+    },
+    {
+      "username": "user",
+      "email": "user@epics-portal.dev",
+      "firstName": "Regular",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "user123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"],
+      "clientRoles": {
+        "web-gi": ["read"]
+      },
+      "groups": []
+    },
+    {
+      "username": "approver",
+      "email": "approver@epics-portal.dev",
+      "firstName": "Approver",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "approver123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user", "approver"],
+      "clientRoles": {
+        "web-gi": ["read", "write"]
+      },
+      "groups": ["/Approver Team"]
+    }
+  ],
+
+  "scopeMappings": [
+    {
+      "client": "web-gi",
+      "roles": ["user"]
+    }
+  ],
+
+  "authenticationFlows": [
+    {
+      "alias": "browser",
+      "description": "browser based authentication",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": true,
+      "authenticationExecutions": [
+        {
+          "authenticator": "auth-cookie",
+          "requirement": "ALTERNATIVE",
+          "priority": 0,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        },
+        {
+          "authenticator": "auth-spnego",
+          "requirement": "DISABLED",
+          "priority": 1,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        },
+        {
+          "authenticator": "identity-provider-redirector",
+          "requirement": "ALTERNATIVE",
+          "priority": 2,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        },
+        {
+          "authenticator": "auth-username-password-form",
+          "requirement": "REQUIRED",
+          "priority": 3,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        }
+      ]
+    },
+    {
+      "alias": "direct grant",
+      "description": "OpenID Connect Resource Owner Grant",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": true,
+      "authenticationExecutions": [
+        {
+          "authenticator": "direct-grant-validate-username",
+          "requirement": "REQUIRED",
+          "priority": 0,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        },
+        {
+          "authenticator": "direct-grant-validate-password",
+          "requirement": "REQUIRED",
+          "priority": 1,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        }
+      ]
+    }
+  ],
+
+  "requiredActions": [
+    {
+      "alias": "CONFIGURE_TOTP",
+      "name": "Configure OTP",
+      "providerId": "CONFIGURE_TOTP",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 10,
+      "config": {}
+    },
+    {
+      "alias": "UPDATE_PASSWORD",
+      "name": "Update Password",
+      "providerId": "UPDATE_PASSWORD",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 30,
+      "config": {}
+    },
+    {
+      "alias": "UPDATE_PROFILE",
+      "name": "Update Profile",
+      "providerId": "UPDATE_PROFILE",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 40,
+      "config": {}
+    },
+    {
+      "alias": "VERIFY_EMAIL",
+      "name": "Verify Email",
+      "providerId": "VERIFY_EMAIL",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 50,
+      "config": {}
+    }
+  ],
+
+  "browserSecurityHeaders": {
+    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
+    "contentSecurityPolicyReportOnly": "",
+    "strictTransportSecurity": "max-age=31536000; includeSubDomains",
+    "xContentTypeOptions": "nosniff",
+    "xFrameOptions": "SAMEORIGIN",
+    "xRobotsTag": "none",
+    "xXSSProtection": "1; mode=block"
+  },
+
+  "smtpServer": {
+    "host": "localhost",
+    "port": "1025",
+    "from": "noreply@epics-portal.dev",
+    "starttls": false,
+    "auth": false
+  },
+
+  "internationalizationEnabled": true,
+  "supportedLocales": ["en", "id"],
+  "defaultLocale": "id",
+
+  "attributes": {
+    "frontendUrl": "http://localhost:8080"
+  }
+}
